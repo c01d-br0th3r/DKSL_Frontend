@@ -121,16 +121,6 @@
 
       <div id="awayTeamPlayers">
         <ul class="list-group">
-          <div class="list-group-item-heading" id="awayTeamName">세종킹스</li>
-          <li class="list-group-item">윤주엽</li>
-          <li class="list-group-item">차진익</li>
-          <li class="list-group-item">안상욱</li>
-          <li class="list-group-item">권태현</li>
-          <li class="list-group-item">김태형</li>
-          <li class="list-group-item">신상우</li>
-          <li class="list-group-item">신현대</li>
-          <li class="list-group-item">김동률</li>
-          <li class="list-group-item">원종석</li>
         </ul>
       </div>
 
@@ -152,32 +142,21 @@
         </div>
         <div id="counter">
           <div class="countPlace" id="ballCount">
-            <p>B</p><div></div><div></div><div></div>
+            <p>B</p>
           </div>
           <div class="countPlace" id="strikeCount">
-            <p>S</p><div></div><div></div>
+            <p>S</p>
           </div> 
           <div class="countPlace" id="outCount">
-            <p>O</p><div></div><div></div>
+            <p>O</p>
           </div>
           <div id="nowBatterPitcher">
-            현재 타자 : 신상우<br/>현재 투수 : 윤주엽
           </div>
         </div>
       </div>
 
       <div id="homeTeamPlayers">
         <ul class="list-group">
-          <div class="list-group-item-heading" id="homeTeamName">건대불소</li>
-          <li class="list-group-item">윤주엽</li>
-          <li class="list-group-item">차진익</li>
-          <li class="list-group-item">안상욱</li>
-          <li class="list-group-item">권태현</li>
-          <li class="list-group-item">김태형</li>
-          <li class="list-group-item">신상우</li>
-          <li class="list-group-item">신현대</li>
-          <li class="list-group-item">김동률</li>
-          <li class="list-group-item">원종석</li>
         </ul>
       </div>
     </div>
@@ -245,29 +224,264 @@
         전송 할 내용
       </div>
       <div class="panel-body" id="scriptContents">
-        내용내용
       </div>
       <button class="btn btn-default" type="button">초기화</button>
-      <button class="btn btn-default" type="button">전송</button>
+      <button class="btn btn-default" type="button" id="sendText">전송</button>
     </div>
 
   </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="resultCode.js"></script>
-    <script src="consoleWork.js"></script>
+    <script src="/script/resultCode.js"></script>
+    <script src="/script/gameInfo.js"></script>
+    <script src="/script/consoleWork.js"></script>
     <script>
-      var tmp = ""
-      for (i in hitResultCode){
-        for (j in posCode){
-          tmp += "\t\"";
-          tmp += j + " ";
-          tmp += i + "\" : \"";
-          tmp += getResultCode(i, j) + "\",\n";
-        }
+      
+      const gameId = $(location).attr('pathname').split('/')[2] * 1;
+      const socket = io();
+
+      var liveInfo = [];
+
+      var nowPitchCount = 1;
+
+      var awayPlayer = [];
+      var homePlayer = [];
+            
+      var textForSend = "";
+      var situationType = 0;
+
+      const setNowPlayer = function (){
+        var tmp = "";
+
+        tmp += "현재 타자 : " + liveInfo[ofTeam[liveInfo.nowTopBottom]].batterInfo[liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter - 1].name + "<br/>";
+        tmp += "현재 투수 : " + liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].name;
+
+        $("#nowBatterPitcher").html(tmp);
       }
-      console.log(tmp);
+      const setCountBoard = function (){
+        $("#ballCount").html("<p>B</p>");
+        $("#strikeCount").html("<p>S</p>");
+        $("#outCount").html("<p>O</p>");
+
+        for (var i = 0; i < liveInfo.nowCount.Ball; i++)
+          $("#ballCount").append("<div></div>");
+        for (var i = 0; i < liveInfo.nowCount.Strike; i++)
+          $("#strikeCount").append("<div></div>");
+        for (var i = 0; i < liveInfo.nowCount.Out; i++)
+          $("#outCount").append("<div></div>");
+      }
+
+      const clearText =  function (){
+        textForSend = "";
+        $("#scriptContents").html("");
+      };
+      const inputText = function (text){
+        if (textForSend != ""){
+          alert("이미 입력한 내용부터 전송해주세요.");
+        }
+        else {
+          textForSend += text;
+          $("#scriptContents").html(textForSend);
+        }
+      };
+      const sendText = function () {
+        liveInfo.textCast[liveInfo.nowInning - 1] += textForSend;
+        socket.emit("renewLive", gameId, liveInfo);
+        clearText();
+        $("#sendText").unbind("click");
+        setNowPlayer();
+      }
+
+      $(document).on("ready", function (){
+
+        socket.emit("getLiveCast", gameId);
+
+        socket.on("sendLiveCast", (live) => {
+
+          liveInfo = live;
+
+          setCountBoard();
+
+          // 새 이닝
+          newInning = () => {
+
+            liveInfo.nowCount.Ball = 0;
+            liveInfo.nowCount.Strike = 0;
+            liveInfo.nowCount.Out = 0;
+
+            if (liveInfo.nowTopBottom == 0){
+              liveInfo.nowTopBottom = 1;
+              teamName = liveInfo.home.name;
+            }
+            else {
+              liveInfo.nowInning++;
+              liveInfo.nowTopBottom = 0;
+              teamName = liveInfo.away.name;
+            }
+
+            textForSend += ("<br/>" + liveInfo.nowInning + TopBottom[liveInfo.nowTopBottom] + " " + teamName + " 공격<br/>");
+
+          }
+
+          // 다음타자
+          nextBatter = () => {
+
+            nowPitchCount = 1;
+            liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter++;
+
+            if (liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter > 9) liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter = 1;
+
+            textForSend += ("<br/>" + liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter + "번 타자 " + liveInfo[ofTeam[liveInfo.nowTopBottom]].batterInfo[liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter - 1].name + "<br/>");
+
+            liveInfo.nowCount.Ball = 0;
+            liveInfo.nowCount.Strike = 0;
+
+          }
+
+          // 볼넷
+          ball = () => {
+
+            nowPitchCount++;
+            liveInfo.nowCount.Ball++;
+
+            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].NP++;
+            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].B++;
+
+            if (liveInfo.nowCount.Ball >= 4){
+              baseOnBalls();
+            }
+
+          }
+
+          // 스트라이크
+          strike = (isFoul) => {
+
+            nowPitchCount++;
+            liveInfo.nowCount.Strike++;
+
+            if (liveInfo.nowCount.Strike >= 3){
+              if (isFoul){
+                liveInfo.nowCount.Strike--;
+              }
+              else{
+                strikeOut();
+              }
+            }
+
+            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].NP++;
+            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].S++;
+
+          }
+
+          // 삼진
+          strikeOut = () => {
+
+            textForSend += (liveInfo[ofTeam[liveInfo.nowTopBottom]].batterInfo[liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter - 1].name + " : 삼진 아웃<br/>");
+
+            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].PA++;
+            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].AB++;
+            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].SO++;
+
+            Out();
+
+          }
+
+          // 볼넷
+          baseOnBalls = () => {
+
+            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].PA++;
+            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].BB++;
+
+            nextBatter();
+
+          }
+
+          // 아웃처리
+          Out = () => {
+
+            liveInfo.nowCount.Out++;
+
+            if (liveInfo.nowCount.Out >= 3){
+              sendText();
+              newInning();
+              nextBatter();
+              sendText();
+            }
+            else {
+              nextBatter();
+            }
+
+          }
+
+          $("#awayTeamPlayers").children("ul").html("");
+          $("#homeTeamPlayers").children("ul").html("");
+
+          $("#awayTeamPlayers").children("ul").append("<div class=\"list-group-item-heading\" id=\"awayTeamName\">" + live.away.name + "</li>");
+          for (i in live.away.batterInfo)
+            $("#awayTeamPlayers").children("ul").append("<li class=\"list-group-item\">" + live.away.batterInfo[i].name + "</li>");
+
+          $("#homeTeamPlayers").children("ul").append("<div class=\"list-group-item-heading\" id=\"homeTeamName\">" + live.home.name + "</li>");
+          for (i in live.home.batterInfo)
+            $("#homeTeamPlayers").children("ul").append("<li class=\"list-group-item\">" + live.home.batterInfo[i].name + "</li>");
+
+          // 시작되지 않았을 시
+          if (liveInfo.nowInning == 0){
+            console.log("START");
+            newInning();
+            nextBatter();
+            sendText();
+          }
+
+        });
+
+      });
+
+
+      $(window).on("load", function (){
+
+          // 콘솔 토글작동 상황 버튼 숨김처리
+          $("#hit_result").hide();
+          $("#fielder").hide();
+          $("#location").hide();
+
+          // 볼 버튼 클릭 시
+          $("#Ball").click(function(event){
+            inputText(nowPitchCount + "구 : 볼<br/>");
+            $("#sendText").click(function(event) {
+              ball();
+              sendText();
+              setCountBoard();
+            });
+          });
+
+          // 스트라이크 
+          $("#Strike").click(function(event){
+            inputText(nowPitchCount + "구 : 스트라이크<br/>");
+            $("#sendText").click(function(event) {
+              strike(false);
+              sendText();
+              setCountBoard();
+            });
+          });
+
+          // 파울
+          $("#Foul").click(function(event){
+            inputText(nowPitchCount + "구 : 파울<br/>");
+            $("#sendText").click(function(event) {
+              strike(true);
+              sendText();
+              setCountBoard();
+            });
+          });
+
+          // 헛스윙
+          $("#Swing").click(function(event){
+            inputText(nowPitchCount + "구 : 헛스윙<br/>");
+          });
+
+      });
+
     </script>
 
   </body>

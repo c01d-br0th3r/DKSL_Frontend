@@ -27,7 +27,6 @@
 		#live {
 			padding: 5px;
 
-			background-color: gray;
 			width: 100%;
 			height: 90%;
 
@@ -57,13 +56,11 @@
 			min-width: 15px;
 		}
 		#liveMsgDiv {
+			overflow-y: auto;
+			padding: 10px;
 			width : 100%;
 			height : 60%;
 			background-color: rgb(36, 56, 93);
-		}
-		#liveMsgDiv div{
-			width : 100%;
-			height : 100%;
 			color: white;
 		}
 		</style>
@@ -92,15 +89,6 @@
 			    <li id="in_9"><a href="#">9회</a></li>
 			</ul>
 			<div id="liveMsgDiv">
-				<div id="live_1">1</div>
-				<div id="live_2">2</div>
-				<div id="live_3">3</div>
-				<div id="live_4">4</div>
-				<div id="live_5">5</div>
-				<div id="live_6">6</div>
-				<div id="live_7">7</div>
-				<div id="live_8">8</div>
-				<div id="live_9">9</div>
 			</div>
 		</div>
 
@@ -110,49 +98,49 @@
     	<script>
 
     		const socket = io();
-
-    		const showInning = (inning) => {
-    			$("#live_" + inning).show();
-
-    			for (i = 1; i <= 9; i++){
-    				if (i != inning) $("#live_" + i).hide();
-    			}
-    		};
+    		var textCast = [];
 
     		$(window).on("load", function (){
 
-    			// 이닝 선택 이벤트 설정
-    			showInning(1);
-    			$("#in_1").addClass('active');
-
-    			$("#inningSelect").children().each(function(index, el) {
-					$(el).click(function(event) {
-						$("#inningSelect").children().each(function(index, el){
-    						$(el).removeClass('active');
-    					});
-						$(el).addClass('active');
-						showInning(index + 1);
-					});    				
-    			});
-    			// 이닝 선택 이벤트 설정 끝
-
-
     			var gameId = $(location).attr('pathname').split('/')[2] * 1;
+
+    			socket.emit("joinLive", gameId);
 
     			socket.emit("getLiveCast", gameId);
 
-
     			// 문자중계 받았을 시
     			socket.on("sendLiveCast", (live) => {
+
+    				textCast = live.textCast;
+
+    				// 이닝 선택 이벤트 설정
+	    			$("#inningSelect").children().each(function(index, el) {
+						$(el).click(function(event) {
+							if (index < live.nowInning){
+								$("#inningSelect").children().each(function(index, el){
+		    						$(el).removeClass('active');
+		    					});
+								$(el).addClass('active');
+
+								$("#liveMsgDiv").html(textCast[index]);
+							}
+						});    				
+	    			});
+	    			// 이닝 선택 이벤트 설정 끝
+
+    				$("#in_" + live.nowInning).addClass("active");
+    				for (var i = 1; i <= 9; i++)
+    					if (live.nowInning < i)
+    						$("#in_" + i).addClass("disabled");
 
     				// 현재 총 점수 갱신
     				$("#away").html(live.away.name + "<br/><h2>" + live.away.totalScore + "</h2>");
     				$("#home").html(live.home.name + "<br/><h2>" + live.home.totalScore + "</h2>");
     				// 현재 총 점수 갱신 끝
 
-
     				// 스코어보드 갱신
     				var tmp = "";
+    				$("#scoreBoard table").html(tmp);
 
     				tmp += "<tr>";
     				tmp += "<th>TEAM</th>";
@@ -164,7 +152,10 @@
     				// 원정팀 스코어보드
     				tmp += "<tr><td>" + live.away.name + "</td>";
     				for (var i = 0; i < 9; i++){
-    					tmp += "<td>" + live.away.score[i] + "</td>";
+    					if (i < live.nowInning)
+    						tmp += "<td>" + live.away.score[i] + "</td>";
+    					else
+    						tmp += "<td></td>";
     				}
     				tmp += "<th style=\"color: rgb(244, 86, 28);\">" + live.away.totalScore + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.away, "H") + "</th>";
@@ -174,7 +165,12 @@
     				// 홈팀 스코어보드
     				tmp += "<tr><td>" + live.home.name + "</td>";
     				for (var i = 0; i < 9; i++){
-    					tmp += "<td>" + live.home.score[i] + "</td>";
+    					if (i < live.nowInning - 1)
+    						tmp += "<td>" + live.home.score[i] + "</td>";
+    					else if (i == (live.nowInning - 1) && live.nowTopBottom == 1)
+    						tmp += "<td>" + live.home.score[i] + "</td>";
+    					else
+    						tmp += "<td></td>";
     				}
     				tmp += "<th style=\"color: rgb(244, 86, 28);\">" + live.home.totalScore + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.home, "H") + "</th>";
@@ -186,13 +182,88 @@
     				// 스코어보드 갱신 끝
 
 
-
     				// 문자중계 출력
-
-
+    				$("#liveMsgDiv").html(textCast[live.nowInning - 1]);
+    				$('#liveMsgDiv').scrollTop($('#liveMsgDiv')[0].scrollHeight);
     				// 문자중계 출력 끝
+
+
+    			});
+
+    			socket.on("liveCast", (live) => {
+
+    				// 스코어보드 갱신
+    				var tmp = "";
+    				$("#scoreBoard table").html(tmp);
+
+    				tmp += "<tr>";
+    				tmp += "<th>TEAM</th>";
+    				for (var i = 0; i < 9; i++){
+    					tmp += "<th>" + (i+1) + "</th>";
+    				}
+    				tmp += "<th>R</th><th>H</th><th>E</th><th>B</th>";
+    				tmp += "</tr>"
+    				// 원정팀 스코어보드
+    				tmp += "<tr><td>" + live.away.name + "</td>";
+    				for (var i = 0; i < 9; i++){
+    					if (i < live.nowInning)
+    						tmp += "<td>" + live.away.score[i] + "</td>";
+    					else
+    						tmp += "<td></td>";
+    				}
+    				tmp += "<th style=\"color: rgb(244, 86, 28);\">" + live.away.totalScore + "</th>";
+    				tmp += "<th>" + getTeamBatterStat(live.away, "H") + "</th>";
+    				tmp += "<th>" + getTeamBatterStat(live.away, "E") + "</th>";
+    				tmp += "<th>" + getTeamBatterStat(live.away, "BB") + "</th>";
+    				tmp += "</tr>";
+    				// 홈팀 스코어보드
+    				tmp += "<tr><td>" + live.home.name + "</td>";
+    				for (var i = 0; i < 9; i++){
+    					if (i < live.nowInning - 1)
+    						tmp += "<td>" + live.home.score[i] + "</td>";
+    					else if (i == (live.nowInning - 1) && live.nowTopBottom == 1)
+    						tmp += "<td>" + live.home.score[i] + "</td>";
+    					else
+    						tmp += "<td></td>";
+    				}
+    				tmp += "<th style=\"color: rgb(244, 86, 28);\">" + live.home.totalScore + "</th>";
+    				tmp += "<th>" + getTeamBatterStat(live.home, "H") + "</th>";
+    				tmp += "<th>" + getTeamBatterStat(live.home, "E") + "</th>";
+    				tmp += "<th>" + getTeamBatterStat(live.home, "BB") + "</th>";
+    				tmp += "</tr>";
+
+    				$("#scoreBoard table").html(tmp);
+    				// 스코어보드 갱신 끝
+
+    				// 문자중계 갱신
+    				for (var i = 1; i <= 9; i++){
+    					$("#in_" + i).removeClass("disabled");
+    					$("#in_" + i).removeClass("active");
+    				}
+    				$("#in_" + live.nowInning).addClass("active");
+    				for (var i = 1; i <= 9; i++)
+    					if (live.nowInning < i)
+    						$("#in_" + i).addClass("disabled");
+
+    				// 이닝 선택 이벤트 설정
+	    			$("#inningSelect").children().each(function(index, el) {
+						$(el).click(function(event) {
+							if (index < live.nowInning){
+								$("#inningSelect").children().each(function(index, el){
+		    						$(el).removeClass('active');
+		    					});
+								$(el).addClass('active');
+
+								$("#liveMsgDiv").html(textCast[index]);
+							}
+						});    				
+	    			});
+	    			// 이닝 선택 이벤트 설정 끝
     				
 
+    				textCast = live.textCast;
+    				$("#liveMsgDiv").html(textCast[live.nowInning - 1]);
+    				$('#liveMsgDiv').scrollTop($('#liveMsgDiv')[0].scrollHeight);
 
     			});
 

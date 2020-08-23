@@ -57,7 +57,9 @@ const getTeamInfo = (teamID, teamName, batters, pitcher) => {
 		score : [0,0,0,0,0,0,0,0,0],	// 이닝별 스코어
 		totalScore : 0,					// 총 스코어
 		batterInfo : batterInfo,
-		pitcherInfo : pitcherInfo
+		nowBatter : 0,
+		pitcherInfo : pitcherInfo,
+		nowPitcher : 0
 	}
 
 	return teamInfo;
@@ -71,8 +73,15 @@ const getGameInfo = (castId, league, away, home, ground) => {
 		league : league,
 		away : away,
 		home : home,
-		nowInning : 1,
-		nowTopBottom : 0,	// 초0, 말1 
+		nowBase : [{}, {}, {}],
+		nowInning : 0,
+		nowTopBottom : 1,	// 초0, 말1
+		nowCount : {
+			Ball : 0,
+			Strike : 0,
+			Out : 0
+		},
+		textCast : ["", "", "", "", "", "", "", "", ""], 
 		ground : ground
 	};
 
@@ -93,3 +102,5 @@ const getTeamBatterStat = (teamInfo, whatTheyWant) => {
 }
 
 const TopBottom = ['회초', '회말'];
+const ofTeam = ['away', 'home'];
+const dfTeam = ['home', 'away'];

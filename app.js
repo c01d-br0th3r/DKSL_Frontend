@@ -30,6 +30,12 @@ app.get('/makeRoom', (req, res) =>{
   res.sendFile(__dirname + '/makeRoom.html');
 });
 
+app.get('/console/:gameId', (req, res) =>{
+  var gameId = req.params.gameId;
+  if ((liveRoom.length - 1) < gameId){ res.sendFile(__dirname + '/404.html'); }
+  else { res.sendFile(__dirname + '/index.html'); }
+});
+
 app.get('/test', (req, res) => {
   res.sendFile(__dirname + '/test.html');
 });
@@ -80,10 +86,21 @@ io.on('connect', (socket) => {
     console.log(liveRoom);
   });
 
+  // 중계정보 갱신 시
+  socket.on('renewLive', (index, gameInfo) => {
+    liveRoom[index] = gameInfo;
+    socket.in('room' + index).emit('liveCast', liveRoom[index]);
+  });
+
   // 중계방 종료 요청 시
   socket.on('deleteLive', (gameInfo) => {
 
   });
+
+  // 중계방 입장 시
+  socket.on('joinLive', (gameId) => {
+    socket.join('room' + gameId);
+  }); 
 
   // 문자중계 요청 시
   socket.on('getLiveCast', (gameId) => {
