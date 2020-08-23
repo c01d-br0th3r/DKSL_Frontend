@@ -279,10 +279,12 @@
       const inputText = function (text){
         if (textForSend != ""){
           alert("이미 입력한 내용부터 전송해주세요.");
+          return false;
         }
         else {
           textForSend += text;
           $("#scriptContents").html(textForSend);
+          return true;
         }
       };
       const sendText = function () {
@@ -447,32 +449,35 @@
 
           // 볼 버튼 클릭 시
           $("#Ball").click(function(event){
-            inputText(nowPitchCount + "구 : 볼<br/>");
-            $("#sendText").click(function(event) {
-              ball();
-              sendText();
-              setCountBoard();
-            });
+            if(inputText(nowPitchCount + "구 : 볼<br/>")){
+              $("#sendText").click(function(event) {
+                ball();
+                sendText();
+                setCountBoard();
+              });
+            }
           });
 
           // 스트라이크 
           $("#Strike").click(function(event){
-            inputText(nowPitchCount + "구 : 스트라이크<br/>");
-            $("#sendText").click(function(event) {
-              strike(false);
-              sendText();
-              setCountBoard();
-            });
+            if(inputText(nowPitchCount + "구 : 스트라이크<br/>")){
+              $("#sendText").click(function(event) {
+                strike(false);
+                sendText();
+                setCountBoard();
+              });
+            }
           });
 
           // 파울
           $("#Foul").click(function(event){
-            inputText(nowPitchCount + "구 : 파울<br/>");
-            $("#sendText").click(function(event) {
-              strike(true);
-              sendText();
-              setCountBoard();
-            });
+            if (inputText(nowPitchCount + "구 : 파울<br/>")){
+              $("#sendText").click(function(event) {
+                strike(true);
+                sendText();
+                setCountBoard();
+              });
+            }
           });
 
           // 헛스윙
