@@ -153,8 +153,8 @@
 
 					// 해당 리그 팀 인원 설정
 					for (i in teams){
-						$("#awayDrop").append("<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\" team=" + teams[i].univId + ">" + teams[i].univName + "</a></li>")
-						$("#homeDrop").append("<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\" team=" + teams[i].univId + ">" + teams[i].univName + "</a></li>")
+						$("#awayDrop").append("<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\" team=" + teams[i].teamId + ">" + teams[i].teamName + "</a></li>")
+						$("#homeDrop").append("<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\" team=" + teams[i].teamId + ">" + teams[i].teamName + "</a></li>")
 					}
 
 					$("#awayDrop").children().each(function(index, el) {

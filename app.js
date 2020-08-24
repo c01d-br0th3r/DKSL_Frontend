@@ -60,21 +60,21 @@ io.on('connect', (socket) => {
 
   // 팀 정보 요청 시
   socket.on('getTeams', (league_id) => {
-    connection.query("SELECT * from univ_info where leagueId = " + league_id, function(err, results, fields){
+    connection.query("SELECT * from team_info where leagueId = " + league_id, function(err, results, fields){
       if (err) { console.log(err); } 
       else { io.emit('sendTeams', results); }
     });
   });
 
   // 선수 정보 요청 시
-  socket.on('getAwayPlayers', (univ_id) => {
-    connection.query("SELECT * from player_info where univId = " + univ_id, function(err, results, fields){
+  socket.on('getAwayPlayers', (team_id) => {
+    connection.query("SELECT * from player_info where univId = " + team_id, function(err, results, fields){
       if (err) { console.log(err); } 
       else { io.emit('sendAwayPlayers', results); }
     });
   });
-  socket.on('getHomePlayers', (univ_id) => {
-    connection.query("SELECT * from player_info where univId = " + univ_id, function(err, results, fields){
+  socket.on('getHomePlayers', (team_id) => {
+    connection.query("SELECT * from player_info where univId = " + team_id, function(err, results, fields){
       if (err) { console.log(err); } 
       else { io.emit('sendHomePlayers', results); }
     });
