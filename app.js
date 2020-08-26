@@ -83,7 +83,7 @@ io.on('connect', (socket) => {
   // 중계방 생성 요청 시
   socket.on('createLive', (gameInfo) => {
     liveRoom.push(gameInfo);
-    console.log(liveRoom);
+    //console.log(liveRoom);
   });
 
   // 중계정보 갱신 시

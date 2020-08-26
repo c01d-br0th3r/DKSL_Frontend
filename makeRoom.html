@@ -240,7 +240,7 @@
 						}
 						tmp += "<option value=0></option>"
 						for (j in players){
-							tmp += "<option value=" + players[j].playerId + ">" + players[j].playerName + " (" + players[j].backNum  + ")" + "</option>"
+							tmp += "<option value=" + players[j].playerId + " name=\"" + players[j].playerName + "\">" + players[j].playerName + " (" + players[j].backNum  + ")" + "</option>"
 						}
 						tmp += "</select></td>";
 
@@ -275,7 +275,7 @@
 						}
 						tmp += "<option value=0></option>"
 						for (j in players){
-							tmp += "<option value=" + players[j].playerId + ">" + players[j].playerName + " (" + players[j].backNum  + ")" + "</option>"
+							tmp += "<option value=" + players[j].playerId + " name=\"" + players[j].playerName + "\">" + players[j].playerName + " (" + players[j].backNum  + ")" + "</option>"
 						}
 						tmp += "</select></td>";
 
@@ -353,7 +353,7 @@
 								for (var i = 1; i <= 9; i++){
 									awayBatter.push({
 										ID : $("select[name=away_batter_" + i + "]").val(),
-										name : $("select[name=away_batter_" + i + "] option:selected").text(),
+										name : $("select[name=away_batter_" + i + "] option:selected").attr("name"),
 										position : $("select[name=away_batter_pos_" + i + "]").val()
 									});
 								}
@@ -368,7 +368,7 @@
 								for (var i = 1; i <= 9; i++){
 									homeBatter.push({
 										ID : $("select[name=home_batter_" + i + "]").val(),
-										name : $("select[name=home_batter_" + i + "] option:selected").text(),
+										name : $("select[name=home_batter_" + i + "] option:selected").attr("name"),
 										position : $("select[name=home_batter_pos_" + i + "]").val()
 									});
 								}
