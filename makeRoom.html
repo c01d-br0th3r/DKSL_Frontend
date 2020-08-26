@@ -20,6 +20,18 @@
     			max-height: 500px;
     			overflow-y: scroll;
     		}
+    		#awayPlayersTable *{
+    			text-align: center;
+    		}
+    		#awayPlayersTable select {
+    			width: 100%;
+    		}
+    		#homePlayersTable *{
+    			text-align: center;
+    		}
+    		#homePlayersTable select {
+    			width: 100%;
+    		}
     	</style>
 	</head>
 
@@ -228,7 +240,7 @@
 						}
 						tmp += "<option value=0></option>"
 						for (j in players){
-							tmp += "<option value=" + players[j].playerId + ">" + players[j].playerName + "</option>"
+							tmp += "<option value=" + players[j].playerId + ">" + players[j].playerName + " (" + players[j].backNum  + ")" + "</option>"
 						}
 						tmp += "</select></td>";
 
@@ -263,7 +275,7 @@
 						}
 						tmp += "<option value=0></option>"
 						for (j in players){
-							tmp += "<option value=" + players[j].playerId + ">" + players[j].playerName + "</option>"
+							tmp += "<option value=" + players[j].playerId + ">" + players[j].playerName + " (" + players[j].backNum  + ")" + "</option>"
 						}
 						tmp += "</select></td>";
 

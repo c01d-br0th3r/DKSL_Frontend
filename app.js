@@ -6,7 +6,7 @@ const io = require('socket.io')(http);
 // mysql
 const mysql = require('mysql');
 const connection = mysql.createConnection({
-  host: 'localhost',
+  host: '49.50.172.42',
   port: '3306',
   user: 'server',
   password: 'tlstkddn!',
@@ -68,13 +68,13 @@ io.on('connect', (socket) => {
 
   // 선수 정보 요청 시
   socket.on('getAwayPlayers', (team_id) => {
-    connection.query("SELECT * from player_info where univId = " + team_id, function(err, results, fields){
+    connection.query("SELECT * from player_info where teamId = " + team_id, function(err, results, fields){
       if (err) { console.log(err); } 
       else { io.emit('sendAwayPlayers', results); }
     });
   });
   socket.on('getHomePlayers', (team_id) => {
-    connection.query("SELECT * from player_info where univId = " + team_id, function(err, results, fields){
+    connection.query("SELECT * from player_info where teamId = " + team_id, function(err, results, fields){
       if (err) { console.log(err); } 
       else { io.emit('sendHomePlayers', results); }
     });
