@@ -20,7 +20,6 @@
 	<style type="text/css">
 		#score {
 			padding: 5px;
-			background-color: yellow;
 			width: 100%;
 			height: 10%;
 		}
@@ -191,6 +190,11 @@
     			});
 
     			socket.on("liveCast", (live) => {
+
+                    // 현재 총 점수 갱신
+                    $("#away").html(live.away.name + "<br/><h2>" + live.away.totalScore + "</h2>");
+                    $("#home").html(live.home.name + "<br/><h2>" + live.home.totalScore + "</h2>");
+                    // 현재 총 점수 갱신 끝
 
     				// 스코어보드 갱신
     				var tmp = "";

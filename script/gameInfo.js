@@ -11,13 +11,14 @@ const getTeamInfo = (teamID, teamName, batters, pitcher) => {
 			ID : batters[i].ID,
 			name : batters[i].name,
 			position : batters[i].position,
-			result : [0,0,0,0,0,0,0,0,0],	// 이닝별 타격 기록
+			result : [[],[],[],[],[],[],[],[],[]],	// 이닝별 타격 기록
 			stat : {						// 총 타격 기록
 				PA : 0,	// 타석
 				AB : 0,	// 타수
 				R : 0,	// 득점
 				H : 0,	// 안타
 				HR : 0,	// 홈런
+				SO : 0,	// 삼진
 				BB : 0,	// 볼넷
 				HBP : 0,// 사구
 				RBI : 0,// 타점
