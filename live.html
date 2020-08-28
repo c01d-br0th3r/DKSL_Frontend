@@ -159,7 +159,7 @@
     				tmp += "<th style=\"color: rgb(244, 86, 28);\">" + live.away.totalScore + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.away, "H") + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.away, "E") + "</th>";
-    				tmp += "<th>" + getTeamBatterStat(live.away, "BB") + "</th>";
+    				tmp += "<th>" + (getTeamBatterStat(live.away, "BB") + getTeamBatterStat(live.away, "HBP")) + "</th>";
     				tmp += "</tr>";
     				// 홈팀 스코어보드
     				tmp += "<tr><td>" + live.home.name + "</td>";
@@ -174,7 +174,7 @@
     				tmp += "<th style=\"color: rgb(244, 86, 28);\">" + live.home.totalScore + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.home, "H") + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.home, "E") + "</th>";
-    				tmp += "<th>" + getTeamBatterStat(live.home, "BB") + "</th>";
+    				tmp += "<th>" + (getTeamBatterStat(live.home, "BB") + getTeamBatterStat(live.home, "HBP")) + "</th>";
     				tmp += "</tr>";
 
     				$("#scoreBoard table").html(tmp);
@@ -218,7 +218,7 @@
     				tmp += "<th style=\"color: rgb(244, 86, 28);\">" + live.away.totalScore + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.away, "H") + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.away, "E") + "</th>";
-    				tmp += "<th>" + getTeamBatterStat(live.away, "BB") + "</th>";
+    				tmp += "<th>" + (getTeamBatterStat(live.away, "BB") + getTeamBatterStat(live.away, "HBP")) + "</th>";
     				tmp += "</tr>";
     				// 홈팀 스코어보드
     				tmp += "<tr><td>" + live.home.name + "</td>";
@@ -233,7 +233,7 @@
     				tmp += "<th style=\"color: rgb(244, 86, 28);\">" + live.home.totalScore + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.home, "H") + "</th>";
     				tmp += "<th>" + getTeamBatterStat(live.home, "E") + "</th>";
-    				tmp += "<th>" + getTeamBatterStat(live.home, "BB") + "</th>";
+    				tmp += "<th>" + (getTeamBatterStat(live.home, "BB") + getTeamBatterStat(live.home, "HBP")) + "</th>";
     				tmp += "</tr>";
 
     				$("#scoreBoard table").html(tmp);
