@@ -19,6 +19,8 @@ const getTeamInfo = (teamID, teamName, batters, pitcher) => {
 					AB : 0,	// 타수
 					R : 0,	// 득점
 					H : 0,	// 안타
+					_2B : 0,	// 2루타
+					_3B : 0,	// 3루타
 					HR : 0,	// 홈런
 					SO : 0,	// 삼진
 					BB : 0,	// 볼넷
@@ -45,6 +47,8 @@ const getTeamInfo = (teamID, teamName, batters, pitcher) => {
 			B : 0,	// 볼 수
 			AB : 0,	// 타수
 			H : 0,	// 피안타
+			_2B : 0,	// 2루타
+			_3B : 0,	// 3루타
 			BB : 0,	// 볼넷
 			HBP : 0,// 사구
 			HR : 0,	// 피홈런
@@ -108,3 +112,10 @@ const getTeamBatterStat = (teamInfo, whatTheyWant) => {
 const TopBottom = ['회초', '회말'];
 const ofTeam = ['away', 'home'];
 const dfTeam = ['home', 'away'];
+
+// 주자관련 코드
+const tagOut = 0;
+const forceOut = 1;
+const to2B = 2;
+const to3B = 3;
+const toHome = 4;

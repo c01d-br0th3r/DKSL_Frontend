@@ -186,15 +186,15 @@
       <button type="button" class="btn btn-default outSitu">직선타병살</button>
       <button type="button" class="btn btn-default outSitu">삼중살</button>
       <button type="button" class="btn btn-default hitSitu">안타</button>
-      <button type="button" class="btn btn-default hitSitu">내야안타</button>
+      <button type="button" class="btn btn-default hitSitu" id="inHit">내야안타</button>
       <button type="button" class="btn btn-default hitSitu">2루타</button>
       <button type="button" class="btn btn-default hitSitu">3루타</button>
-      <button type="button" class="btn btn-default GHRSitu">그라운드 홈런</button>
+      <button type="button" class="btn btn-default hitSitu" id="GHR">그라운드 홈런</button>
       <button type="button" class="btn btn-default HRSitu">홈런</button>
       <button type="button" class="btn btn-default outSitu">번트땅볼</button>
       <button type="button" class="btn btn-default outSitu">번트뜬공</button>
       <button type="button" class="btn btn-default hitSitu">번트안타</button>
-      <button type="button" class="btn btn-default hitSitu">야수선택</button>
+      <button type="button" class="btn btn-default outSitu">야수선택</button>
     </div>
     
     <div class="btn-group-lg" id="fielder" style="margin-bottom: 10px">
@@ -218,6 +218,35 @@
       <button class="btn btn-default loc">왼쪽</button>
       <button class="btn btn-default loc">오른쪽</button>
       <button class="btn btn-default loc">뒤</button>
+    </div>
+
+    <div class="btn-group-lg" id="runner" style="margin-bottom: 10px">
+      <div class="btn-group-justified" id="runnerHeader"></div>
+      <button class="btn btn-default loc" id="tag">태그아웃</button>
+      <button class="btn btn-default loc" id="force">포스아웃</button>
+      <button class="btn btn-default loc" id="2B">2루까지 진루</button>
+      <button class="btn btn-default loc" id="3B">3루까지 진루</button>
+      <button class="btn btn-default loc" id="home">홈인</button>
+    </div>
+
+    <div class="btn-group-lg" id="runnerTagOutLoca" style="margin-bottom: 10px">
+      <div class="btn-group-justified" id="runnerHeader"></div>
+      <button class="btn btn-default loc">포수</button>
+      <button class="btn btn-default loc">1루수</button>
+      <button class="btn btn-default loc">2루수</button>
+      <button class="btn btn-default loc">3루수</button>
+      <button class="btn btn-default loc">유격수</button>
+      <button class="btn btn-default loc">좌익수</button>
+      <button class="btn btn-default loc">중견수</button>
+      <button class="btn btn-default loc">우익수</button>
+    </div>
+
+    <div class="btn-group-lg" id="runnerForceOutLoca" style="margin-bottom: 10px">
+      <div class="btn-group-justified" id="runnerHeader"></div>
+      <button class="btn btn-default loc">1루</button>
+      <button class="btn btn-default loc">2루</button>
+      <button class="btn btn-default loc">3루</button>
+      <button class="btn btn-default loc">홈</button>
     </div>
 
     <div class="panel panel-default" id="sendScript">
@@ -256,6 +285,9 @@
       var textForSend = "";
       var situationType = 0;
 
+      // 상황 이후 목적베이스 
+      var afterSituBase = [0, 0, 0]; 
+
       const setNowPlayer = function (){
         var tmp = "";
 
@@ -291,6 +323,15 @@
         $("#location").children().each(function(index, el) {
           $(el).unbind('click');
         });
+        $("#runner").children().each(function(index, el) {
+          $(el).unbind('click');
+        });
+        $("#runnerTagOutLoca").children().each(function(index, el) {
+          $(el).unbind('click');
+        });
+        $("#runnerForceOutLoca").children().each(function(index, el) {
+          $(el).unbind('click');
+        });
       };
 
       const inputText = function (text){
@@ -303,11 +344,13 @@
           $("#scriptContents").html(textForSend);
           return true;
         }
-      };
+      }
+
       const appendText = function (text){
         textForSend += text;
         $("#scriptContents").append(text);
       }
+
       const sendText = function () {
         liveInfo.textCast[liveInfo.nowInning - 1] += textForSend;
         socket.emit("renewLive", gameId, liveInfo);
@@ -315,6 +358,7 @@
         setNowPlayer();
         renewBase();
       }
+
       const clearTextandAction = function (){
         if(confirm("정말 보낼 내용을 초기화하시겠습니까? (상황도 이루어지지 않습니다.)")){
           clearText();
@@ -323,19 +367,102 @@
           $("#hit_result").hide();
           $("#fielder").hide();
           $("#location").hide();
+          $("#runner").hide();
+          $("#runnerForceOutLoca").hide();
+          $("#runnerTagOutLoca").hide();
         }
       }
+
       const getNowOffenseTeam = function (){
         return liveInfo[ofTeam[liveInfo.nowTopBottom]];
       }
+
       const getNowBatter = function () {
         return liveInfo[ofTeam[liveInfo.nowTopBottom]].batterInfo[liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter - 1].batters[liveInfo[ofTeam[liveInfo.nowTopBottom]].batterInfo[liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter - 1].now];
       }
+
       const getNowDefenceTeam = function () {
         return liveInfo[dfTeam[liveInfo.nowTopBottom]];
       }
+
       const getNowPitcher = function () {
         return liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher];
+      }
+
+      const setRunnerSitu = function (base, p, r) {
+
+        $("#runner").hide();
+        $("#runner").children().each(function(index, el) {
+          $(el).unbind('click');
+        });
+        $("#runnerTagOutLoca").children().each(function(index, el) {
+          $(el).unbind('click');
+        });
+        $("#runnerForceOutLoca").children().each(function(index, el) {
+          $(el).unbind('click');
+        });
+
+        if (base < 0) {
+          console.log(r);
+          $("#sendText").click(function(event) {
+            switch(r){
+              case "안타": hit(p, r); break;
+              case "2루타" : _2B(p); break;
+              case "3루타" : _3B(p); break;
+              case "그라운드 홈런" : HR(p); break;
+              case "내야안타" : hit(p, r); break;
+              case "번트안타" : hit(p, r); break;
+            }
+            sendText();
+            setCountBoard();
+            renewBase();
+          });
+          return;
+        }
+
+        if (!isEmptyObject(liveInfo.nowBase[base])){
+
+          $("#runner").show();
+          $("#runnerHeader").html((base + 1) + "루주자 타격 후 상황");
+
+          var tmp = (base + 1) + "루주자 " + liveInfo.nowBase[base].name + " : ";
+
+          $("#runner").children().each(function(index, el) {
+            $(el).click(function(event) {
+              $("#ruuner").hide();
+              switch($(el).attr("id")){
+                case "tag" : 
+                  
+                  afterSituBase[base] = tagOut;
+                  break;
+                case "force": 
+                  
+                  afterSituBase[base] = forceOut;
+                  break;
+                case "2B" : 
+                  tmp += "2루까지 진루<br/>";
+                  appendText(tmp);
+                  afterSituBase[base] = to3B;
+                  break;
+                case "3B" :
+                  tmp += "3루까지 진루<br/>";
+                  appendText(tmp);
+                  afterSituBase[base] = to3B;
+                  break;
+                case "home" : 
+                  tmp += "홈인<br/>";
+                  appendText(tmp);
+                  afterSituBase[base] = toHome;
+                  break;
+              }
+              setRunnerSitu(base - 1, p, r);
+            });
+          });
+        }
+        else 
+          setRunnerSitu(base - 1, p, r);
+
+
       }
 
       $(document).on("ready", function (){
@@ -403,8 +530,8 @@
             nowPitchCount++;
             liveInfo.nowCount.Ball++;
 
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].NP++;
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].B++;
+            getNowPitcher().NP++;
+            getNowPitcher().B++;
 
             if (liveInfo.nowCount.Ball >= 4){
               baseOnBalls();
@@ -427,8 +554,8 @@
               }
             }
 
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].NP++;
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].S++;
+            getNowPitcher().NP++;
+            getNowPitcher().S++;
 
           }
 
@@ -444,9 +571,9 @@
             getNowBatter().stat.SO++;
 
             // 투수스탯 누적
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].PA++;
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].AB++;
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].SO++;
+            getNowPitcher().PA++;
+            getNowPitcher().AB++;
+            getNowPitcher().SO++;
 
             Out();
 
@@ -498,8 +625,8 @@
             liveInfo.nowBase[0] = getNowBatter(); 
 
             // 투수스탯 누적
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].PA++;
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].BB++;
+            getNowPitcher().PA++;
+            getNowPitcher().BB++;
 
             nextBatter();
 
@@ -633,8 +760,78 @@
             getNowBatter().stat.R++;
             getNowBatter().stat.RBI += RBI;
 
+            // 투수스탯 누적
+            getNowPitcher().stat.NP++;
+            getNowPitcher().stat.S++;
+            getNowPitcher().stat.PA++;
+            getNowPitcher().stat.AB++;
+            getNowPitcher().stat.H++;
+            getNowPitcher().stat.HR++;
+            getNowPitcher().stat.R += RBI;
+            getNowPitcher().stat.ER += RBI;
+
+
             nextBatter();
             clearBase();
+
+          }
+
+          // 3루타
+          _3B = (pos) => {
+
+          }
+
+          // 2루타
+          _2B = (pos) => {
+
+          }
+
+          // 안타
+          hit = (pos, res) => {
+
+            var tmpBase = [{}, {}, {}]
+            var RBI = 0;
+
+            for (var i = 2; i >= 0; i--){
+              if (!isEmptyObject(liveInfo.nowBase[i])){
+                switch(afterSituBase[i]){
+                  case tagOut: 
+                  case forceOut: break;
+                  case to2B: tmpBase[1] = liveInfo.nowBase[i]; break;
+                  case to3B: tmpBase[2] = liveInfo.nowBase[i]; break;
+                  case toHome: 
+                    liveInfo.nowBase[i].stat.R++;
+                    RBI++;
+                    break;
+                }
+              }
+            }
+
+            // 베이스 갱신
+            liveInfo.nowBase = tmpBase;
+            liveInfo.nowBase[0] = getNowBatter();
+
+            // 팀스탯 누적
+            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
+            getNowOffenseTeam().totalScore += RBI;
+
+            // 타자스탯 누적
+            getNowBatter().result[liveInfo.nowInning - 1].push(resultCode[pos + " " + res]);
+            getNowBatter().stat.PA++;
+            getNowBatter().stat.AB++;
+            getNowBatter().stat.H++;
+            getNowBatter().stat.RBI += RBI;
+
+            // 투수스탯 누적
+            getNowPitcher().stat.NP++;
+            getNowPitcher().stat.S++;
+            getNowPitcher().stat.PA++;
+            getNowPitcher().stat.AB++;
+            getNowPitcher().stat.H++;
+            getNowPitcher().stat.R += RBI;
+            getNowPitcher().stat.ER += RBI;
+
+            nextBatter();
 
           }
 
@@ -708,6 +905,9 @@
           $("#hit_result").hide();
           $("#fielder").hide();
           $("#location").hide();
+          $("#runner").hide();
+          $("#runnerTagOutLoca").hide();
+          $("#runnerForceOutLoca").hide();
 
           $("#clearText").click(function(event) {
             clearTextandAction();
@@ -763,11 +963,14 @@
             var pos = "";
 
             if (inputText(nowPitchCount + "구 : 타격<br/>")){
+
               $("#hit_result").show();
-              console.log(tmp);
+              
+              tmp += getNowBatter().name + " : ";
+
               // 홈런
               $("#hit_result").children(".HRSitu").each(function(index, el) {
-                tmp += getNowBatter().name + " : ";
+
                 $(el).click(function(event) {
 
                   $("#hit_result").hide();
@@ -775,6 +978,7 @@
                   $(".infielder").hide();
 
                   $("#fielder").children().each(function(index, el) {
+                    
                     $(el).click(function(event) {
 
                       pos = $(el).html();
@@ -789,17 +993,67 @@
 
                       appendText(tmp);
                       $("#fielder").hide();
-                    });
-                  });
 
-                  $("#sendText").click(function(event) {
-                      HR(pos);
-                      sendText();
-                      setCountBoard();
-                      renewBase();
+                      $("#sendText").click(function(event) {
+                          HR(pos);
+                          sendText();
+                          setCountBoard();
+                          renewBase();
+                      });
+
+                    });
+
                   });
 
                 });
+
+              });
+
+              // 안타 관련
+              $("#hit_result").children(".hitSitu").each(function(index, el) {
+
+                var result = "";
+
+                $(el).click(function(event) {
+                  
+                  result = $(el).html();
+                  console.log(result);
+
+                  $("#hit_result").hide();
+                  $("#fielder").show();
+                  if (result == "내야안타") $(".outfielder").hide();
+
+                  $("#fielder").children().each(function(index, el) {
+
+                    $(el).click(function(event) {
+
+                      pos = $(el).html();
+                      console.log(pos);
+
+                      tmp += pos + " ";
+
+                      $("#fielder").hide();
+                      $("#location").show();
+
+                      $("#location").children().each(function(index, el) {
+                        $(el).click(function(event) {
+                          
+                          tmp += $(el).html() + " " + result + "<br/>";
+                          appendText(tmp);
+                          $("#location").hide();
+                          
+                          setRunnerSitu(2, pos, result);
+
+                        });  
+
+                      });
+
+                    });
+
+                  });
+
+                });
+
               });
 
             }
