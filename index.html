@@ -176,9 +176,9 @@
 
     <div class="btn-group-lg" id="hit_result" style="margin-bottom: 10px">
       <div class="btn-group-justified">타격 결과</div>
-      <button type="button" class="btn btn-default outSitu">땅볼</button>
+      <button type="button" class="btn btn-default outSitu">땅볼 아웃</button>
       <button type="button" class="btn btn-default outSitu">땅볼로 출루</button>
-      <button type="button" class="btn btn-default outSitu">뜬공</button>
+      <button type="button" class="btn btn-default outSitu">플라이 아웃</button>
       <button type="button" class="btn btn-default outSitu">직선타</button>
       <button type="button" class="btn btn-default outSitu">희생플라이</button>
       <button type="button" class="btn btn-default outSitu">희생번트</button>
@@ -189,27 +189,28 @@
       <button type="button" class="btn btn-default hitSitu" id="inHit">내야안타</button>
       <button type="button" class="btn btn-default hitSitu">2루타</button>
       <button type="button" class="btn btn-default hitSitu">3루타</button>
-      <button type="button" class="btn btn-default hitSitu" id="GHR">그라운드 홈런</button>
+      <button type="button" class="btn btn-default hitSitu">그라운드 홈런</button>
       <button type="button" class="btn btn-default HRSitu">홈런</button>
-      <button type="button" class="btn btn-default outSitu">번트땅볼</button>
-      <button type="button" class="btn btn-default outSitu">번트뜬공</button>
+      <button type="button" class="btn btn-default outSitu">번트땅볼 아웃</button>
+      <button type="button" class="btn btn-default outSitu">번트뜬공 아웃</button>
       <button type="button" class="btn btn-default hitSitu">번트안타</button>
       <button type="button" class="btn btn-default outSitu">야수선택</button>
+      <button type="button" class="btn btn-default outSitu">실책으로 출루</button>
     </div>
     
     <div class="btn-group-lg" id="fielder" style="margin-bottom: 10px">
       <div class="btn-group-justified">타격상황 포지션</div>
-      <button class="btn btn-default infielder">투수</button>
-      <button class="btn btn-default infielder">포수</button>
-      <button class="btn btn-default infielder">1루수</button>
-      <button class="btn btn-default infielder">2루수</button>
-      <button class="btn btn-default infielder">3루수</button>
-      <button class="btn btn-default infielder">유격수</button>
-      <button class="btn btn-default outfielder">좌익수</button>
+      <button class="btn btn-default infielder" pos="1">투수</button>
+      <button class="btn btn-default infielder" pos="2">포수</button>
+      <button class="btn btn-default infielder" pos="3">1루수</button>
+      <button class="btn btn-default infielder" pos="4">2루수</button>
+      <button class="btn btn-default infielder" pos="5">3루수</button>
+      <button class="btn btn-default infielder" pos="6">유격수</button>
+      <button class="btn btn-default outfielder" pos="7">좌익수</button>
       <button class="btn btn-default outfielder onlyHit">좌중간</button>
-      <button class="btn btn-default outfielder">중견수</button>
+      <button class="btn btn-default outfielder" pos="8">중견수</button>
       <button class="btn btn-default outfielder onlyHit">우중간</button>
-      <button class="btn btn-default outfielder">우익수</button>
+      <button class="btn btn-default outfielder" pos="9">우익수</button>
     </div>
 
     <div class="btn-group-lg" id="location" style="margin-bottom: 10px">
@@ -221,9 +222,10 @@
     </div>
 
     <div class="btn-group-lg" id="runner" style="margin-bottom: 10px">
-      <div class="btn-group-justified" id="runnerHeader"></div>
+      <div class="btn-group-justified" id="runnerHeader"><h1></h1></div>
       <button class="btn btn-default loc" id="tag">태그아웃</button>
       <button class="btn btn-default loc" id="force">포스아웃</button>
+      <button class="btn btn-default loc" id="notMove">현재위치 그대로</button>
       <button class="btn btn-default loc" id="2B">2루까지 진루</button>
       <button class="btn btn-default loc" id="3B">3루까지 진루</button>
       <button class="btn btn-default loc" id="home">홈인</button>
@@ -312,6 +314,7 @@
 
       const clearText =  function (){
         textForSend = "";
+        afterSituBase = [0, 0, 0];
         $("#scriptContents").html("");
         $("#sendText").unbind("click");
         $("#hit_result").children().each(function(index, el) {
@@ -409,9 +412,24 @@
               case "안타": hit(p, r); break;
               case "2루타" : _2B(p); break;
               case "3루타" : _3B(p); break;
-              case "그라운드 홈런" : HR(p); break;
               case "내야안타" : hit(p, r); break;
               case "번트안타" : hit(p, r); break;
+              //case "그라운드 홈런" : HR(p); break;
+              case "땅볼 아웃" : 
+              case "땅볼로 출루" : 
+              case "플라이 아웃" : 
+              case "직선타" : 
+              case "희생플라이" : 
+              case "희생번트" : 
+              case "병살타" : 
+              case "직선타병살" : 
+              case "삼중살" : 
+              case "번트땅볼 아웃" : 
+              case "번트뜬공 아웃" : 
+              case "야수선택" : 
+              case "실책으로 출루" : 
+                Out(p, r);
+                break;
             }
             sendText();
             setCountBoard();
@@ -423,26 +441,48 @@
         if (!isEmptyObject(liveInfo.nowBase[base])){
 
           $("#runner").show();
-          $("#runnerHeader").html((base + 1) + "루주자 타격 후 상황");
+          $("#runnerHeader").html("<h2>" + (base + 1) + "루주자 타격 후 상황</h2>");
 
           var tmp = (base + 1) + "루주자 " + liveInfo.nowBase[base].name + " : ";
+          var isOut = false;
 
           $("#runner").children().each(function(index, el) {
             $(el).click(function(event) {
               $("#ruuner").hide();
               switch($(el).attr("id")){
-                case "tag" : 
-                  
+                case "tag" :    
+                  isOut = true;
                   afterSituBase[base] = tagOut;
+                  $("#runnerTagOutLoca").show();
+                  $("#runnerTagOutLoca").children().each(function(index, el) {
+                    $(el).click(function(event) {
+                      tmp += $(el).html() + " 태그아웃<br/>";
+                      appendText(tmp);
+                      setRunnerSitu(base - 1, p, r);
+                      $("#runnerTagOutLoca").hide();
+                    });
+                  });
                   break;
                 case "force": 
-                  
+                  isOut = true;
                   afterSituBase[base] = forceOut;
+                  $("#runnerForceOutLoca").show();
+                  $("#runnerForceOutLoca").children().each(function(index, el) {
+                    $(el).click(function(event) {
+                      tmp += $(el).html() + " 포스아웃<br/>";
+                      appendText(tmp);
+                      setRunnerSitu(base - 1, p, r);
+                      $("#runnerForceOutLoca").hide();
+                    });
+                  });
+                  break;
+                case "notMove":
+                  afterSituBase[base] = notMove;
                   break;
                 case "2B" : 
                   tmp += "2루까지 진루<br/>";
                   appendText(tmp);
-                  afterSituBase[base] = to3B;
+                  afterSituBase[base] = to2B;
                   break;
                 case "3B" :
                   tmp += "3루까지 진루<br/>";
@@ -455,13 +495,83 @@
                   afterSituBase[base] = toHome;
                   break;
               }
-              setRunnerSitu(base - 1, p, r);
+
+              if (!isOut) setRunnerSitu(base - 1, p, r);
+
             });
           });
         }
         else 
           setRunnerSitu(base - 1, p, r);
 
+      }
+
+      const moveRunnerWhenBB = function (base, move) {
+
+        if (base > 2) return;
+
+        else if (isEmptyObject(liveInfo.nowBase[base])){
+          move = false;
+        }
+        else if (move){
+          switch(base){
+            case 0:
+              afterSituBase[base] = to2B; break;
+            case 1: 
+              afterSituBase[base] = to3B; break;
+            case 2: 
+              afterSituBase[base] = toHome; break;
+          }
+          move = true;
+        }
+        else {
+          afterSituBase[base] = notMove;
+          move = false;
+        }
+
+        moveRunnerWhenBB(base + 1, move);
+
+        if (move){
+          var toBase = (base + 2) + "루까지 진루";
+          if (base > 1) toBase = "홈인";
+          appendText((base + 1) + "루주자 " + liveInfo.nowBase[base].name + " : " + toBase + "<br/>");
+        }
+
+        return;
+
+      }
+
+      const moveRunner = function () {
+
+        console.log(afterSituBase);
+
+        var tmpBase = [{}, {}, {}];
+        var RBI = 0;
+
+        for (var i = 2; i >= 0; i--){
+          if (!isEmptyObject(liveInfo.nowBase[i])){
+            switch(afterSituBase[i]){
+              case tagOut: 
+              case forceOut:
+                liveInfo.nowCount.Out++;
+                break;
+              case notMove : tmpBase[i] = liveInfo.nowBase[i]; break;
+              case to2B: tmpBase[1] = liveInfo.nowBase[i]; break;
+              case to3B: tmpBase[2] = liveInfo.nowBase[i]; break;
+              case toHome: 
+                getNowOffenseTeam().score[liveInfo.nowInning - 1]++;
+                getNowOffenseTeam().totalScore++;
+                liveInfo.nowBase[i].stat.R++;
+                RBI++;
+                break;
+            }
+          }
+        }
+
+        console.log(tmpBase);
+        liveInfo.nowBase = tmpBase;
+
+        return RBI;
 
       }
 
@@ -513,11 +623,11 @@
           nextBatter = () => {
 
             nowPitchCount = 1;
-            liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter++;
+            getNowOffenseTeam().nowBatter++;
 
-            if (liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter > 9) liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter = 1;
+            if (getNowOffenseTeam().nowBatter > 9) getNowOffenseTeam().nowBatter = 1;
 
-            textForSend += ("<br/>" + liveInfo[ofTeam[liveInfo.nowTopBottom]].nowBatter + "번 타자 " + getNowBatter().name + "<br/>");
+            textForSend += ("<br/>" + getNowOffenseTeam().nowBatter + "번 타자 " + getNowBatter().name + "<br/>");
 
             liveInfo.nowCount.Ball = 0;
             liveInfo.nowCount.Strike = 0;
@@ -554,15 +664,15 @@
               }
             }
 
-            getNowPitcher().NP++;
-            getNowPitcher().S++;
+            getNowPitcher().stat.NP++;
+            getNowPitcher().stat.S++;
 
           }
 
           // 삼진
           strikeOut = () => {
 
-            textForSend += (getNowBatter().name + " : 삼진 아웃<br/>");
+            liveInfo.nowCount.Out++;
 
             // 타자스탯 누적
             getNowBatter().result[liveInfo.nowInning - 1].push(resultCode["삼진"]);
@@ -571,62 +681,43 @@
             getNowBatter().stat.SO++;
 
             // 투수스탯 누적
-            getNowPitcher().PA++;
-            getNowPitcher().AB++;
-            getNowPitcher().SO++;
+            getNowPitcher().stat.PA++;
+            getNowPitcher().stat.AB++;
+            getNowPitcher().stat.SO++;
 
-            Out();
+            if (liveInfo.nowCount.Out >= 3){
+              sendText();
+              newInning();
+              nextBatter();
+              sendText();
+            }
+            else {
+              nextBatter();
+            }
 
           }
 
           // 볼넷
           baseOnBalls = () => {
 
-            textForSend += (getNowBatter().name + " : 볼넷<br/>");
+            moveRunnerWhenBB(0, true);
+            var RBI = moveRunner();
+
+            liveInfo.nowBase[0] = getNowBatter();
 
             // 타자스탯 누적
             getNowBatter().result[liveInfo.nowInning - 1].push(resultCode["볼넷"]);
             getNowBatter().stat.PA++;
             getNowBatter().stat.BB++;
-
-            // 만루
-            if (!isEmptyObject(liveInfo.nowBase[0]) && !isEmptyObject(liveInfo.nowBase[1]) && !isEmptyObject(liveInfo.nowBase[2])){
-              textForSend += ("3루 주자 " + liveInfo.nowBase[2].name + " : 홈인<br/>");
-              liveInfo[ofTeam[liveInfo.nowTopBottom]].score[liveInfo.nowInning - 1]++;
-              liveInfo[ofTeam[liveInfo.nowTopBottom]].totalScore++;
-
-              // 주자 득점 증가
-              liveInfo.nowBase[2].stat.R++;
-
-              // 타자 타점 증가
-              getNowBatter().stat.RBI++;
-
-              textForSend += ("2루 주자 " + liveInfo.nowBase[1].name + " : 3루까지 진루<br/>");
-              liveInfo.nowBase[2] = liveInfo.nowBase[1];
-
-              textForSend += ("1루 주자 " + liveInfo.nowBase[0].name + " : 2루까지 진루<br/>"); 
-              liveInfo.nowBase[1] = liveInfo.nowBase[0]; 
-            }
-            // 1,2루
-            else if (!isEmptyObject(liveInfo.nowBase[0]) && !isEmptyObject(liveInfo.nowBase[1])){
-              textForSend += ("2루 주자 " + liveInfo.nowBase[1].name + " : 3루까지 진루<br/>");
-              liveInfo.nowBase[2] = liveInfo.nowBase[1];
-
-              textForSend += ("1루 주자 " + liveInfo.nowBase[0].name + " : 2루까지 진루<br/>"); 
-              liveInfo.nowBase[1] = liveInfo.nowBase[0]; 
-            }
-            // 1루
-            else if (!isEmptyObject(liveInfo.nowBase[0])){
-              textForSend += ("1루 주자 " + liveInfo.nowBase[0].name + " : 2루까지 진루<br/>"); 
-              liveInfo.nowBase[1] = liveInfo.nowBase[0]; 
-            }
-            
-
-            liveInfo.nowBase[0] = getNowBatter(); 
+            getNowBatter().stat.RBI += RBI;
 
             // 투수스탯 누적
-            getNowPitcher().PA++;
-            getNowPitcher().BB++;
+            getNowPitcher().stat.NP++;
+            getNowPitcher().stat.B++;
+            getNowPitcher().stat.PA++;
+            getNowPitcher().stat.BB++;
+            getNowPitcher().stat.R += RBI;
+            getNowPitcher().stat.ER += RBI;
 
             nextBatter();
 
@@ -635,49 +726,25 @@
           // 사구
           hitByPitch = () => {
 
+            // 주자 이동
+            moveRunnerWhenBB(0, true);
+            console.log(afterSituBase);
+            var RBI = moveRunner();
+
+            liveInfo.nowBase[0] = getNowBatter(); 
+
             // 타자스탯 누적
             getNowBatter().result[liveInfo.nowInning - 1].push(resultCode["사구"]);
             getNowBatter().stat.PA++;
             getNowBatter().stat.HBP++;
 
-            // 주자 이동
-            // 만루
-            if (!isEmptyObject(liveInfo.nowBase[0]) && !isEmptyObject(liveInfo.nowBase[1]) && !isEmptyObject(liveInfo.nowBase[2])){
-              textForSend += ("3루 주자 " + liveInfo.nowBase[2].name + " : 홈인<br/>");
-              liveInfo[ofTeam[liveInfo.nowTopBottom]].score[liveInfo.nowInning - 1]++;
-              liveInfo[ofTeam[liveInfo.nowTopBottom]].totalScore++;
-
-              // 주자 득점 증가
-              liveInfo.nowBase[2].stat.R++;
-
-              // 타자 타점 증가
-              getNowBatter().stat.RBI++;
-
-              textForSend += ("2루 주자 " + liveInfo.nowBase[1].name + " : 3루까지 진루<br/>");
-              liveInfo.nowBase[2] = liveInfo.nowBase[1];
-
-              textForSend += ("1루 주자 " + liveInfo.nowBase[0].name + " : 2루까지 진루<br/>"); 
-              liveInfo.nowBase[1] = liveInfo.nowBase[0]; 
-            }
-            // 1,2루
-            else if (!isEmptyObject(liveInfo.nowBase[0]) && !isEmptyObject(liveInfo.nowBase[1])){
-              textForSend += ("2루 주자 " + liveInfo.nowBase[1].name + " : 3루까지 진루<br/>");
-              liveInfo.nowBase[2] = liveInfo.nowBase[1];
-
-              textForSend += ("1루 주자 " + liveInfo.nowBase[0].name + " : 2루까지 진루<br/>"); 
-              liveInfo.nowBase[1] = liveInfo.nowBase[0]; 
-            }
-            // 1루
-            else if (!isEmptyObject(liveInfo.nowBase[0])){
-              textForSend += ("1루 주자 " + liveInfo.nowBase[0].name + " : 2루까지 진루<br/>"); 
-              liveInfo.nowBase[1] = liveInfo.nowBase[0]; 
-            }
-            
-
-            liveInfo.nowBase[0] = getNowBatter(); 
-
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].PA++;
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].HBP++;
+            // 투수스탯 누적
+            getNowPitcher().stat.NP++;
+            getNowPitcher().stat.B++;
+            getNowPitcher().stat.PA++;
+            getNowPitcher().stat.HBP++;
+            getNowPitcher().stat.R += RBI;
+            getNowPitcher().stat.ER += RBI;
 
             nextBatter();
 
@@ -686,49 +753,22 @@
           // 고의사구
           internationalBB = () => {
 
+            moveRunnerWhenBB(0, true);
+            var RBI = moveRunner();
+
+            liveInfo.nowBase[0] = getNowBatter();
+
             // 타자스탯 누적
-            getNowBatter().result[liveInfo.nowInning - 1].push(resultCode["고의사구"]);
+            getNowBatter().result[liveInfo.nowInning - 1].push(resultCode["볼넷"]);
             getNowBatter().stat.PA++;
             getNowBatter().stat.BB++;
+            getNowBatter().stat.RBI += RBI;
 
-            // 만루
-            if (!isEmptyObject(liveInfo.nowBase[0]) && !isEmptyObject(liveInfo.nowBase[1]) && !isEmptyObject(liveInfo.nowBase[2])){
-              textForSend += ("3루 주자 " + liveInfo.nowBase[2].name + " : 홈인<br/>");
-              liveInfo[ofTeam[liveInfo.nowTopBottom]].score[liveInfo.nowInning - 1]++;
-              liveInfo[ofTeam[liveInfo.nowTopBottom]].totalScore++;
-
-              // 주자 득점 증가
-              liveInfo.nowBase[2].stat.R++;
-
-              // 타자 타점 증가
-              getNowBatter().stat.RBI++;
-
-
-              textForSend += ("2루 주자 " + liveInfo.nowBase[1].name + " : 3루까지 진루<br/>");
-              liveInfo.nowBase[2] = liveInfo.nowBase[1];
-
-              textForSend += ("1루 주자 " + liveInfo.nowBase[0].name + " : 2루까지 진루<br/>"); 
-              liveInfo.nowBase[1] = liveInfo.nowBase[0]; 
-            }
-            // 1,2루
-            else if (!isEmptyObject(liveInfo.nowBase[0]) && !isEmptyObject(liveInfo.nowBase[1])){
-              textForSend += ("2루 주자 " + liveInfo.nowBase[1].name + " : 3루까지 진루<br/>");
-              liveInfo.nowBase[2] = liveInfo.nowBase[1];
-
-              textForSend += ("1루 주자 " + liveInfo.nowBase[0].name + " : 2루까지 진루<br/>"); 
-              liveInfo.nowBase[1] = liveInfo.nowBase[0]; 
-            }
-            // 1루
-            else if (!isEmptyObject(liveInfo.nowBase[0])){
-              textForSend += ("1루 주자 " + liveInfo.nowBase[0].name + " : 2루까지 진루<br/>"); 
-              liveInfo.nowBase[1] = liveInfo.nowBase[0]; 
-            }
-            
-
-            liveInfo.nowBase[0] = getNowBatter(); 
-
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].PA++;
-            liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher].BB++;
+            // 투수스탯 누적
+            getNowPitcher().stat.PA++;
+            getNowPitcher().stat.BB++;
+            getNowPitcher().stat.R += RBI;
+            getNowPitcher().stat.ER += RBI;
 
             nextBatter();
 
@@ -737,19 +777,23 @@
           // 홈런
           HR = (pos) => {
 
-            var RBI = 1;
+            var tmp = ""
 
             // 주자 득점
             for (var i = 2; i >= 0; i--){
               if (!isEmptyObject(liveInfo.nowBase[i])){
-                textForSend += ((i+1) + "루 주자 " + liveInfo.nowBase[i].name + " : 홈인<br/>"); 
-                liveInfo.nowBase[i].stat.R++;
-                RBI++;
+                afterSituBase[i] = toHome;
+                tmp += (i+1) + "루 주자 " + liveInfo.nowBase[i].name + " : 홈인<br/>";
               }
             }
+            appendText(tmp);
 
-            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
-            getNowOffenseTeam().totalScore += RBI;
+            var RBI = 1 + moveRunner();
+            console.log(RBI);
+
+            // 타자주자 홈인
+            getNowOffenseTeam().score[liveInfo.nowInning - 1]++;
+            getNowOffenseTeam().totalScore++;
 
             // 타자스탯 누적
             getNowBatter().result[liveInfo.nowInning - 1].push(resultCode[pos + " 홈런"]);
@@ -770,45 +814,101 @@
             getNowPitcher().stat.R += RBI;
             getNowPitcher().stat.ER += RBI;
 
-
             nextBatter();
             clearBase();
 
           }
 
           // 3루타
-          _3B = (pos) => {
+          _3B = (pos, res) => {
+
+            var RBI = moveRunner();
+
+            // 베이스 갱신
+            liveInfo.nowBase[2] = getNowBatter();
+
+            // 팀스탯 누적
+            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
+            getNowOffenseTeam().totalScore += RBI;
+
+            // 타자스탯 누적
+            getNowBatter().result[liveInfo.nowInning - 1].push(resultCode[pos + " " + res]);
+            getNowBatter().stat.PA++;
+            getNowBatter().stat.AB++;
+            getNowBatter().stat.H++;
+            getNowBatter().stat._3B++;
+            getNowBatter().stat.RBI += RBI;
+
+            // 투수스탯 누적
+            getNowPitcher().stat.NP++;
+            getNowPitcher().stat.S++;
+            getNowPitcher().stat.PA++;
+            getNowPitcher().stat.AB++;
+            getNowPitcher().stat.H++;
+            getNowPitcher().stat._3B++;
+            getNowPitcher().stat.R += RBI;
+            getNowPitcher().stat.ER += RBI;
+
+            if (liveInfo.nowCount.Out >= 3){
+              sendText();
+              newInning();
+              nextBatter();
+              sendText();
+            }
+            else {
+              nextBatter();
+            }
 
           }
 
           // 2루타
-          _2B = (pos) => {
+          _2B = (pos, res) => {
+
+            var RBI = moveRunner();
+
+            // 베이스 갱신
+            liveInfo.nowBase[1] = getNowBatter();
+
+            // 팀스탯 누적
+            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
+            getNowOffenseTeam().totalScore += RBI;
+
+            // 타자스탯 누적
+            getNowBatter().result[liveInfo.nowInning - 1].push(resultCode[pos + " " + res]);
+            getNowBatter().stat.PA++;
+            getNowBatter().stat.AB++;
+            getNowBatter().stat.H++;
+            getNowBatter().stat._2B++;
+            getNowBatter().stat.RBI += RBI;
+
+            // 투수스탯 누적
+            getNowPitcher().stat.NP++;
+            getNowPitcher().stat.S++;
+            getNowPitcher().stat.PA++;
+            getNowPitcher().stat.AB++;
+            getNowPitcher().stat.H++;
+            getNowPitcher().stat._2B++;
+            getNowPitcher().stat.R += RBI;
+            getNowPitcher().stat.ER += RBI;
+
+            if (liveInfo.nowCount.Out >= 3){
+              sendText();
+              newInning();
+              nextBatter();
+              sendText();
+            }
+            else {
+              nextBatter();
+            }
 
           }
 
           // 안타
           hit = (pos, res) => {
 
-            var tmpBase = [{}, {}, {}]
-            var RBI = 0;
-
-            for (var i = 2; i >= 0; i--){
-              if (!isEmptyObject(liveInfo.nowBase[i])){
-                switch(afterSituBase[i]){
-                  case tagOut: 
-                  case forceOut: break;
-                  case to2B: tmpBase[1] = liveInfo.nowBase[i]; break;
-                  case to3B: tmpBase[2] = liveInfo.nowBase[i]; break;
-                  case toHome: 
-                    liveInfo.nowBase[i].stat.R++;
-                    RBI++;
-                    break;
-                }
-              }
-            }
+            var RBI = moveRunner();
 
             // 베이스 갱신
-            liveInfo.nowBase = tmpBase;
             liveInfo.nowBase[0] = getNowBatter();
 
             // 팀스탯 누적
@@ -831,14 +931,58 @@
             getNowPitcher().stat.R += RBI;
             getNowPitcher().stat.ER += RBI;
 
-            nextBatter();
+            if (liveInfo.nowCount.Out >= 3){
+              sendText();
+              newInning();
+              nextBatter();
+              sendText();
+            }
+            else {
+              nextBatter();
+            }
 
           }
 
           // 아웃처리
-          Out = () => {
+          Out = (pos, res, pnum) => {
 
-            liveInfo.nowCount.Out++;
+            if (res != "야수선택" && res != "땅볼로 출루" && res != "실책으로 출루")
+              liveInfo.nowCount.Out++;
+
+            var RBI = moveRunner();
+
+            // 병살타 타점 무효
+            if (res == "병살타" || res == "직선타병살") RBI = 0;
+
+            // 팀스탯 누적
+            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
+            getNowOffenseTeam().totalScore += RBI;
+
+            // 타자스탯 누적
+            getNowBatter().result[liveInfo.nowInning - 1].push(resultCode[pos + " " + res]);
+            getNowBatter().stat.PA++;
+            getNowBatter().stat.AB++;
+            if (res == "병살타" || res == "직선타병살") getNowBatter().stat.GDP++;
+            getNowBatter().stat.RBI += RBI;
+
+            // 투수스탯 누적
+            getNowPitcher().stat.NP++;
+            getNowPitcher().stat.S++;
+            getNowPitcher().stat.PA++;
+            getNowPitcher().stat.AB++;
+            getNowPitcher().stat.R += RBI;
+            getNowPitcher().stat.ER += RBI;
+
+            if (res == "야수선택" || res == "땅볼로 출루" || res == "실책으로 출루")
+              liveInfo.nowBase[0] = getNowBatter();
+
+            if (res == "실책으로 출루"){
+              for (i in getNowDefenceTeam().batterInfo){
+                if (getNowDefenceTeam().batterInfo[i].batters[getNowDefenceTeam().batterInfo[i].now].position == posCode[pos]){
+                  getNowDefenceTeam().batterInfo[i].batters[getNowDefenceTeam().batterInfo[i].now].stat.E++;
+                }
+              }
+            }
 
             if (liveInfo.nowCount.Out >= 3){
               sendText();
@@ -916,6 +1060,7 @@
           // 볼 버튼 클릭 시
           $("#Ball").click(function(event){
             if(inputText(nowPitchCount + "구 : 볼<br/>")){
+              if (liveInfo.nowCount.Ball == 3) appendText(getNowBatter().name + " : 볼넷<br/>");
               $("#sendText").click(function(event) {
                 ball();
                 sendText();
@@ -927,6 +1072,7 @@
           // 스트라이크 
           $("#Strike").click(function(event){
             if(inputText(nowPitchCount + "구 : 스트라이크<br/>")){
+              if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃<br/>");
               $("#sendText").click(function(event) {
                 strike(false);
                 sendText();
@@ -948,12 +1094,14 @@
 
           // 헛스윙
           $("#Swing").click(function(event){
-            if (inputText(nowPitchCount + "구 : 헛스윙<br/>"));
-            $("#sendText").click(function(event) {
+            if (inputText(nowPitchCount + "구 : 헛스윙<br/>")){
+              if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃<br/>");
+              $("#sendText").click(function(event) {
                 strike(false);
                 sendText();
                 setCountBoard();
-            });
+              });
+            }
           });
 
           //타격
@@ -973,9 +1121,14 @@
 
                 $(el).click(function(event) {
 
+                  var result = $(el).html();
+                  var loca = "뒤";
+
                   $("#hit_result").hide();
                   $("#fielder").show();
                   $(".infielder").hide();
+                  $(".outfielder").show();
+                  $(".onlyHit").show();
 
                   $("#fielder").children().each(function(index, el) {
                     
@@ -987,9 +1140,9 @@
                         tmp += pos + " ";
                       }
                       else {
-                        tmp += pos + " 뒤 ";
+                        tmp += pos + " " + loca + " ";
                       }
-                      tmp += "홈런<br/>";
+                      tmp += result + "<br/>";
 
                       appendText(tmp);
                       $("#fielder").hide();
@@ -1017,10 +1170,12 @@
                 $(el).click(function(event) {
                   
                   result = $(el).html();
-                  console.log(result);
 
                   $("#hit_result").hide();
                   $("#fielder").show();
+                  $(".infielder").show();
+                  $(".outfielder").show();
+                  $(".onlyHit").show();
                   if (result == "내야안타") $(".outfielder").hide();
 
                   $("#fielder").children().each(function(index, el) {
@@ -1028,7 +1183,6 @@
                     $(el).click(function(event) {
 
                       pos = $(el).html();
-                      console.log(pos);
 
                       tmp += pos + " ";
 
@@ -1042,11 +1196,64 @@
                           appendText(tmp);
                           $("#location").hide();
                           
-                          setRunnerSitu(2, pos, result);
+                          if (result == "그라운드 홈런") {
+                            $("#sendText").click(function(event) {
+                                HR(pos);
+                                sendText();
+                                setCountBoard();
+                                renewBase();
+                            });
+                          }
+                          else setRunnerSitu(2, pos, result);
 
                         });  
 
                       });
+
+                    });
+
+                  });
+
+                });
+
+              });
+
+
+              // 범타 관련
+              $("#hit_result").children(".outSitu").each(function(index, el) {
+
+                var result = "";
+
+                $(el).click(function(event) {
+                  
+                  result = $(el).html();
+
+                  $("#hit_result").hide();
+                  $("#fielder").show();
+                  $(".infielder").show();
+                  $(".outfielder").show();
+                  $(".onlyHit").hide();
+
+                  $("#fielder").children().each(function(index, el) {
+
+                    $(el).click(function(event) {
+
+                      pos = $(el).html();
+
+                      switch(result){
+                        case "땅볼 아웃" : case "땅볼로 출루" : case "병살타" : case "삼중살" :
+                          tmp += pos + " 앞 " + result + "<br/>";
+                          break;
+                        default :
+                        tmp += pos + " " + result + "<br/>";
+                      }
+
+
+                      $("#fielder").hide();
+
+                      appendText(tmp);
+                          
+                      setRunnerSitu(2, pos, result);
 
                     });
 

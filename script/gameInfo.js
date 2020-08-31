@@ -28,6 +28,7 @@ const getTeamInfo = (teamID, teamName, batters, pitcher) => {
 					RBI : 0,// 타점
 					SB : 0,	// 도루
 					CS : 0,	// 도실
+					GDP : 0, 	// 병살타 
 					E : 0	// 에러
 				}
 			}]
@@ -116,6 +117,7 @@ const dfTeam = ['home', 'away'];
 // 주자관련 코드
 const tagOut = 0;
 const forceOut = 1;
-const to2B = 2;
-const to3B = 3;
-const toHome = 4;
+const notMove = 2
+const to2B = 3;
+const to3B = 4;
+const toHome = 5;
