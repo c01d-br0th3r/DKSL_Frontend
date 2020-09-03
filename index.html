@@ -262,10 +262,12 @@
     </div>
 
     <ul class="dropdown-menu" role="menu" id="playerOption">
-      <li role="presentation" class="dropdown-header"></li>
-      <li role="presentation" class="playerOptionItem"><a role="menuitem">선수 교체</a></li>
-      <li role="presentation" class="playerOptionItem"><a role="menuitem">포지션 교체</a></li>
+      <li role="presentation" class="dropdown-header" id="playerOptionHeader"></li>
+      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="playerChange" href="#">선수 교체</a></li>
+      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="posChange" href="#">포지션 교체</a></li>
     </ul>
+
+
 
   </div>
 
@@ -284,13 +286,25 @@
 
           liveInfo = live;
 
-          renewPlayerList();
           setCountBoard();
 
           // 선수명단 조작
           $(".players").click(function(event) {
+
+            var mousePos = getMousePos(event);
             
             $("#playerOption").show();
+            $("#playerOption").css({
+              left : mousePos.x,
+              top : mousePos.y
+            });
+            $("#playerOptionHeader").html($(this).attr("player-name"));
+            $("#playerChange").html("선수 교체");
+
+            if (getNowBatter().ID == $(this).attr("player-id")*1){
+              $("#playerOptionHeader").append("  <strong>현재타자</strong>");
+              $("#playerChange").html("대타 교체")
+            }
 
           });
 
@@ -332,14 +346,16 @@
           nextBatter = () => {
 
             nowPitchCount = 1;
-            getNowOffenseTeam().nowBatter++;
 
+            getNowOffenseTeam().nowBatter++;
             if (getNowOffenseTeam().nowBatter > 9) getNowOffenseTeam().nowBatter = 1;
 
             textForSend += ("<br/>" + getNowOffenseTeam().nowBatter + "번 타자 " + getNowBatter().name + "<br/>");
 
             liveInfo.nowCount.Ball = 0;
             liveInfo.nowCount.Strike = 0;
+
+            renewPlayerList();
 
           }
 
@@ -414,6 +430,10 @@
 
             liveInfo.nowBase[0] = getNowBatter();
 
+            // 팀스탯 누적
+            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
+            getNowOffenseTeam().totalScore += RBI;
+
             // 타자스탯 누적
             getNowBatter().result[liveInfo.nowInning - 1].push(resultCode["볼넷"]);
             getNowBatter().stat.PA++;
@@ -442,6 +462,10 @@
 
             liveInfo.nowBase[0] = getNowBatter(); 
 
+            // 팀스탯 누적
+            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
+            getNowOffenseTeam().totalScore += RBI;
+
             // 타자스탯 누적
             getNowBatter().result[liveInfo.nowInning - 1].push(resultCode["사구"]);
             getNowBatter().stat.PA++;
@@ -466,6 +490,10 @@
             var RBI = moveRunner();
 
             liveInfo.nowBase[0] = getNowBatter();
+
+            // 팀스탯 누적
+            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
+            getNowOffenseTeam().totalScore += RBI;
 
             // 타자스탯 누적
             getNowBatter().result[liveInfo.nowInning - 1].push(resultCode["볼넷"]);
@@ -652,6 +680,11 @@
 
           }
 
+          // 타자교체
+          changeBatter = () => {
+
+          }
+
           // 아웃처리
           Out = (pos, res, pnum) => {
 
@@ -733,6 +766,8 @@
             sendText();
           }
 
+          renewPlayerList();
+
           setNowPlayer();
           renewBase();
 
@@ -743,6 +778,13 @@
 
       $(window).on("load", function (){
 
+          $("html").click(function(event) {
+            
+            if (event.target.id != "posChange" && event.target.id != "playerChange" && event.target.id != "awayPlayers" && event.target.id != "homePlayers" && event.target.id != "playerOption" && event.target.id != "playerOptionHeader" && event.target.id != "playerOptionItem" && $("#playerOption").css("display") == "block"){
+              $("#playerOption").hide();
+            }
+          });
+
           // 콘솔 토글작동 상황 버튼 숨김처리
           $("#hit_result").hide();
           $("#fielder").hide();
@@ -750,7 +792,6 @@
           $("#runner").hide();
           $("#runnerTagOutLoca").hide();
           $("#runnerForceOutLoca").hide();
-          $("#playerOption").show();
 
           $("#clearText").click(function(event) {
             clearTextandAction();

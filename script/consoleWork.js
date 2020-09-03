@@ -257,14 +257,14 @@ const moveRunnerWhenBB = function (base, move) {
 }
 
 const moveRunner = function () {
-    console.log(afterSituBase);
+    
     var tmpBase = [{}, {}, {}];
     var RBI = 0;
     for (var i = 2; i >= 0; i--) {
         if (! isEmptyObject(liveInfo.nowBase[i])) {
             switch (afterSituBase[i]) {
                 case tagOut:
-                case forceOut: liveInfo.nowCount.Out ++;
+                case forceOut: liveInfo.nowCount.Out++;
                     break;
                 case notMove: tmpBase[i] = liveInfo.nowBase[i];
                     break;
@@ -272,31 +272,51 @@ const moveRunner = function () {
                     break;
                 case to3B: tmpBase[2] = liveInfo.nowBase[i];
                     break;
-                case toHome: getNowOffenseTeam().score[liveInfo.nowInning - 1]++;
-                    getNowOffenseTeam().totalScore ++;
-                    liveInfo
-                        .nowBase[i]
-                        .stat
-                        .R ++;
+                case toHome:
+                    liveInfo.nowBase[i].stat.R ++;
                     RBI++;
                     break;
             }
         }
     }
-    console.log(tmpBase);
+    console.log(RBI);
     liveInfo.nowBase = tmpBase;
     return RBI;
 }
 
 const renewPlayerList = function () {
+
     $("#awayTeamPlayers").children("ul").html("");
     $("#homeTeamPlayers").children("ul").html("");
     $("#awayTeamPlayers").children("ul").append("<div class=\"list-group-item-heading\" id=\"awayTeamName\">" + liveInfo.away.name + "</div>");
     for (i in liveInfo.away.batterInfo) 
-        $("#awayTeamPlayers").children("ul").append("<div class=\"list-group-item players\" player-id=\"" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].ID + "\">" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].name + " - " + getKeyByValue(posCode, liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].position) + "</div>");
+        $("#awayTeamPlayers").children("ul").append("<div class=\"list-group-item players\" id=\"awayPlayers\" player-name=\"" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].name + "\" player-id=\"" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].ID + "\">" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].name + " - " + getKeyByValue(posCode, liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].position) + "</div>");
     
     $("#homeTeamPlayers").children("ul").append("<div class=\"list-group-item-heading\" id=\"homeTeamName\">" + liveInfo.home.name + "</div>");
     for (i in liveInfo.home.batterInfo) 
-        $("#homeTeamPlayers").children("ul").append("<div class=\"list-group-item players\" player-id=\"" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].ID + "\">" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].name + " - " + getKeyByValue(posCode, liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].position) + "</div>");
+        $("#homeTeamPlayers").children("ul").append("<div class=\"list-group-item players\" id=\"homePlayers\" player-name=\"" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].name + "\" player-id=\"" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].ID + "\">" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].name + " - " + getKeyByValue(posCode, liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].position) + "</div>");
     
+    $(".players[player-id=" + getNowBatter().ID + "]").append("  <strong>현재타자</strong>")
+
+}
+
+const getMousePos = function (e) {
+
+    var x = 0;
+    var y = 0;
+
+    if (!e){
+        var e = window.event;
+    }
+    if (e.pageX || e.pageY){
+        x = e.pageX;
+        y = e.pageY;
+    }
+    else if (e.clientX || e.clientY){
+        x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+        y = e.clientY = document.body.scrollTop + document.documentElement.scrollTop;
+    }
+
+    return { x, y };
+
 }
