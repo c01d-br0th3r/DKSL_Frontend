@@ -3,6 +3,10 @@
 // example : 투수 앞 땅볼 = 311 (땅볼3 + 투수1)
 //           좌익수 뒤 2루타 = 1474 (2루타14 + 좌익수7)
 
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
+
 const hitResultCode = {
 	삼진 : 0,
 	볼넷 : 1,
@@ -33,17 +37,17 @@ const hitResultCode = {
 };
 
 const posCode = {
-	투수 : 1,
-	포수 : 2,
-	'1루수' : 3,
-	'2루수': 4,
-	'3루수' : 5,
-	유격수 : 6,
-	좌익수 : 7,
-	중견수 : 8,
-	우익수 : 9,
-	우중간 : 10,
-	좌중간 : 20
+	투수 : "1",
+	포수 : "2",
+	'1루수' : "3",
+	'2루수': "4",
+	'3루수' : "5",
+	유격수 : "6",
+	좌익수 : "7",
+	중견수 : "8",
+	우익수 : "9",
+	우중간 : "10",
+	좌중간 : "20"
 };
 
 const locaCode = {
