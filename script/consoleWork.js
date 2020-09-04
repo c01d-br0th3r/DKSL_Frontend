@@ -9,8 +9,10 @@ const socket = io();
 
 var liveInfo = [];
 var nowPitchCount = 1;
+
 var awayPlayer = [];
 var homePlayer = [];
+
 var textForSend = "";
 var situationType = 0;
 
@@ -112,6 +114,12 @@ const getNowDefenceTeam = function () {
 }
 const getNowPitcher = function () {
     return liveInfo[dfTeam[liveInfo.nowTopBottom]].pitcherInfo[liveInfo[dfTeam[liveInfo.nowTopBottom]].nowPitcher];
+}
+const getAwayTeam = function () {
+    return liveInfo["away"];
+}
+const getHomeTeam = function () {
+    return liveInfo["home"];
 }
 
 const setRunnerSitu = function (base, p, r) {
@@ -286,6 +294,8 @@ const moveRunner = function () {
 
 const renewPlayerList = function () {
 
+	$(".players").unbind("click");
+
     $("#awayTeamPlayers").children("ul").html("");
     $("#homeTeamPlayers").children("ul").html("");
     $("#awayTeamPlayers").children("ul").append("<div class=\"list-group-item-heading\" id=\"awayTeamName\">" + liveInfo.away.name + "</div>");
@@ -297,6 +307,51 @@ const renewPlayerList = function () {
         $("#homeTeamPlayers").children("ul").append("<div class=\"list-group-item players\" id=\"homePlayers\" player-name=\"" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].name + "\" player-id=\"" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].ID + "\">" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].name + " - " + getKeyByValue(posCode, liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].position) + "</div>");
     
     $(".players[player-id=" + getNowBatter().ID + "]").append("  <strong>현재타자</strong>")
+
+    // 선수명단 조작
+    $(".players").click(function(event) {
+
+    	var mousePos = getMousePos(event);
+            
+        $("#playerOption").show();
+        $("#playerOption").css({
+            left : mousePos.x,
+            top : mousePos.y
+        });
+        $("#playerOptionHeader").html($(this).attr("player-name"));
+        $("#playerChange").html("선수 교체");
+
+        if (getNowBatter().ID == $(this).attr("player-id")*1){
+            $("#playerOptionHeader").append("  <strong>현재타자</strong>");
+            $("#playerChange").html("대타 교체")
+        }
+
+    });
+
+    // 대기선수 갱신 (현재 라인업에 들어가있는 명단 제거)
+    for (i in getAwayTeam().batterInfo){
+        for (j = 0; j <= getAwayTeam().batterInfo[i].now; j++){
+            for (k in awayPlayer){
+                if (awayPlayer[k].playerId == (getAwayTeam().batterInfo[i].batters[j].ID * 1)){
+                    awayPlayer.splice(k, 1);
+                    break;
+                }
+            }
+        }
+    }
+
+    for (i in getHomeTeam().batterInfo){
+        for (j = 0; j <= getHomeTeam().batterInfo[i].now; j++){
+            for (k in homePlayer){
+                if (homePlayer[k].playerId == (getHomeTeam().batterInfo[i].batters[j].ID * 1)){
+                    homePlayer.splice(k, 1);
+                    break;
+                }
+            }
+        }
+    }
+
+    console.log(awayPlayer);
 
 }
 

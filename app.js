@@ -80,6 +80,7 @@ io.on('connect', (socket) => {
     });
   });
 
+
   // 중계방 생성 요청 시
   socket.on('createLive', (gameInfo) => {
     liveRoom.push(gameInfo);
@@ -105,6 +106,28 @@ io.on('connect', (socket) => {
   // 문자중계 요청 시
   socket.on('getLiveCast', (gameId) => {
     socket.emit('sendLiveCast', liveRoom[gameId]);
+  });
+
+  // 콘솔에서 중계정보 요청 시
+  socket.on('getLiveInfo', (gameId) => {
+
+    var away = [];
+    var home = [];
+
+    connection.query("SELECT playerId, playerName from player_info where teamId = " + liveRoom[gameId].away.ID, function(err, results, fields){
+      if (err) { console.log(err); } 
+      else { 
+        away = results; 
+        connection.query("SELECT playerId, playerName from player_info where teamId = " + liveRoom[gameId].home.ID, function(err, results, fields){
+          if (err) { console.log(err); } 
+          else { 
+            home = results; 
+            socket.emit('sendLiveInfo', liveRoom[gameId], away, home);
+          }
+        });
+      }
+    });
+
   });
   
   // 로그인 요청 시

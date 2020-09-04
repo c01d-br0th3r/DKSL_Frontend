@@ -280,33 +280,16 @@
 
       $(document).on("ready", function (){
 
-        socket.emit("getLiveCast", gameId);
+        socket.emit("getLiveInfo", gameId);
 
-        socket.on("sendLiveCast", (live) => {
+        socket.on("sendLiveInfo", (live, away, home) => {
 
           liveInfo = live;
 
+          awayPlayer = away;
+          homePlayer = home;
+
           setCountBoard();
-
-          // 선수명단 조작
-          $(".players").click(function(event) {
-
-            var mousePos = getMousePos(event);
-            
-            $("#playerOption").show();
-            $("#playerOption").css({
-              left : mousePos.x,
-              top : mousePos.y
-            });
-            $("#playerOptionHeader").html($(this).attr("player-name"));
-            $("#playerChange").html("선수 교체");
-
-            if (getNowBatter().ID == $(this).attr("player-id")*1){
-              $("#playerOptionHeader").append("  <strong>현재타자</strong>");
-              $("#playerChange").html("대타 교체")
-            }
-
-          });
 
           for (var i in getNowOffenseTeam().batterInfo){
             for (var j in liveInfo.nowBase){
@@ -315,7 +298,6 @@
               }
             }
           }
-
 
           // 새 이닝
           newInning = () => {
@@ -783,6 +765,7 @@
             if (event.target.id != "posChange" && event.target.id != "playerChange" && event.target.id != "awayPlayers" && event.target.id != "homePlayers" && event.target.id != "playerOption" && event.target.id != "playerOptionHeader" && event.target.id != "playerOptionItem" && $("#playerOption").css("display") == "block"){
               $("#playerOption").hide();
             }
+
           });
 
           // 콘솔 토글작동 상황 버튼 숨김처리
