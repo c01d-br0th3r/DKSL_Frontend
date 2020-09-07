@@ -349,6 +349,7 @@
 					if (isOK){
 						if (confirm("입력하신 선발 출전 명단이 맞습니까?")){
 							if (confirm("입력하신 정보로 중계방을 생성하시겠습니까?")){
+
 								// 원정팀 정보 생성
 								for (var i = 1; i <= 9; i++){
 									awayBatter.push({
@@ -359,12 +360,12 @@
 								}
 								awayPitcher.push({
 									ID : $("select[name=away_pitcher_1]").val(),
-									name : $("select[name=away_pitcher_1] option:selected").text()
+									name : $("select[name=away_pitcher_1] option:selected").attr("name")
 								});
 
 								var awayTeam = getTeamInfo(awayId, awayName, awayBatter, awayPitcher);
 
-								// 원정팀 정보 생성
+								// 홈팀 정보 생성
 								for (var i = 1; i <= 9; i++){
 									homeBatter.push({
 										ID : $("select[name=home_batter_" + i + "]").val(),
@@ -374,16 +375,16 @@
 								}
 								homePitcher.push({
 									ID : $("select[name=home_pitcher_1]").val(),
-									name : $("select[name=home_pitcher_1] option:selected").text()
+									name : $("select[name=home_pitcher_1] option:selected").attr("name")
 								});
 
 								var homeTeam = getTeamInfo(homeId, homeName, homeBatter, homePitcher);
 
+								// 리그 정보 생성
 								var leagueInfo = {
 									id : $("#leagueSelect").attr("league"),
 									name : $("#leagueSelect button").html()
 								};
-
 
 								var gameInfo = getGameInfo(0, leagueInfo, awayTeam, homeTeam, ground);
 

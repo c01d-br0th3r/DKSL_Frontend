@@ -112,6 +112,30 @@
       background-color: red;
     }
 
+    #subPlayersDiv {
+      z-index: 2;
+      position: absolute;
+      border: 1px solid black;
+      background-color: white;
+
+      top: 4%;
+      left: 25%;
+
+      width: 50%;
+      height: 40%;
+
+      overflow-y: auto;
+    }
+
+    #subPlayersDivBack{
+      z-index: 1;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
     </style>
   </head>
 
@@ -251,6 +275,11 @@
       <button class="btn btn-default loc">홈</button>
     </div>
 
+    <div id="subPlayersDiv">
+    </div>
+    <div id="subPlayersDivBack">
+    </div>
+
     <div class="panel panel-default" id="sendScript">
       <div class="panel-heading">
         전송 할 내용
@@ -264,6 +293,12 @@
     <ul class="dropdown-menu" role="menu" id="playerOption">
       <li role="presentation" class="dropdown-header" id="playerOptionHeader"></li>
       <li role="presentation" class="playerOptionItem"><a role="menuitem" id="playerChange" href="#">선수 교체</a></li>
+      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="posChange" href="#">포지션 교체</a></li>
+    </ul>
+
+    <ul class="dropdown-menu" role="menu" id="runnerOption">
+      <li role="presentation" class="dropdown-header" id="runnerOptionHeader"></li>
+      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="stolenBase" href="#">선수 교체</a></li>
       <li role="presentation" class="playerOptionItem"><a role="menuitem" id="posChange" href="#">포지션 교체</a></li>
     </ul>
 
@@ -286,8 +321,8 @@
 
           liveInfo = live;
 
-          awayPlayer = away;
-          homePlayer = home;
+          awaySubPlayers = away;
+          homeSubPlayers = home;
 
           setCountBoard();
 
@@ -663,7 +698,60 @@
           }
 
           // 타자교체
-          changeBatter = () => {
+          changeBatter = (team, order, subPlayer) => {
+
+            var newPlayer = getBatter(subPlayer.playerId, subPlayer.playerName, getBatterByOrder(team, order).position);
+
+            // 현재타자일 경우
+            if (getNowBatter() == getBatterByOrder(team, order)){
+              appendText((order*1 + 1) + "번 타자 " + getBatterByOrder(team, order).name + " : 대타 " + subPlayer.playerName + "(으)로 교체<br/>");
+              $("#sendText").click(function(event) { appendText((order*1 + 1) + "번 타자 " + subPlayer.playerName + "<br/>"); });
+            }
+            else {
+              appendText(getKeyByValue(posCode, getBatterByOrder(team, order).position) + " " + getBatterByOrder(team, order).name + " : " + getKeyByValue(posCode, getBatterByOrder(team, order).position) + " " + subPlayer.playerName + "(으)로 교체<br/>");
+            }
+
+            $("#sendText").click(function(event) {
+
+              console.log("asdas");
+
+              // 바꾼 타자가 투수일 경우
+              if (getBatterByOrder(team, order).position == "1"){
+
+                liveInfo[team].nowPitcher++;
+
+                liveInfo[team].pitcherInfo[liveInfo[team].nowPitcher] = getPitcher(subPlayer.playerId, subPlayer.playerName);
+              }
+
+              liveInfo[team].batterInfo[order].now++;
+
+              setBatterByOrder(team, order, newPlayer);
+              renewPlayerList();
+
+              sendText();
+
+            });
+
+          }
+
+          // 투수교체
+          changePitcher = (team, nextPitcher) => {
+
+            var newPitcher = getPitcher(nextPitcher.playerId, nextPitcher.playerName);
+
+            appendText("투수 " + getNowTeamPitcher(team).name + " : 투수 " + nextPitcher.playerName + "(으)로 교체<br/>");
+
+            $("#sendText").click(function(event) {
+              liveInfo[team].nowPitcher++;
+              liveInfo[team].pitcherInfo[liveInfo[team].nowPitcher] = newPitcher;
+              renewPlayerList();
+              sendText();
+            });
+
+          }
+
+          // 포지션 교체
+          changePosition = (team, player, pos) => {
 
           }
 
@@ -768,6 +856,11 @@
 
           });
 
+          $("#subPlayersDivBack").click(function(event) {
+            $("#subPlayersDiv").hide();
+            $("#subPlayersDivBack").hide();
+          });
+
           // 콘솔 토글작동 상황 버튼 숨김처리
           $("#hit_result").hide();
           $("#fielder").hide();
@@ -775,6 +868,8 @@
           $("#runner").hide();
           $("#runnerTagOutLoca").hide();
           $("#runnerForceOutLoca").hide();
+          $("#subPlayersDiv").hide();
+          $("#subPlayersDivBack").hide();
 
           $("#clearText").click(function(event) {
             clearTextandAction();
@@ -782,7 +877,7 @@
 
           // 볼 버튼 클릭 시
           $("#Ball").click(function(event){
-            if(inputText(nowPitchCount + "구 : 볼<br/>")){
+            if(inputText("- " + nowPitchCount + "구 : 볼<br/>")){
               if (liveInfo.nowCount.Ball == 3) appendText(getNowBatter().name + " : 볼넷<br/>");
               $("#sendText").click(function(event) {
                 ball();
@@ -794,7 +889,7 @@
 
           // 스트라이크 
           $("#Strike").click(function(event){
-            if(inputText(nowPitchCount + "구 : 스트라이크<br/>")){
+            if(inputText("- " + nowPitchCount + "구 : 스트라이크<br/>")){
               if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃<br/>");
               $("#sendText").click(function(event) {
                 strike(false);
@@ -806,7 +901,7 @@
 
           // 파울
           $("#Foul").click(function(event){
-            if (inputText(nowPitchCount + "구 : 파울<br/>")){
+            if (inputText("- " + nowPitchCount + "구 : 파울<br/>")){
               $("#sendText").click(function(event) {
                 strike(true);
                 sendText();
@@ -817,7 +912,7 @@
 
           // 헛스윙
           $("#Swing").click(function(event){
-            if (inputText(nowPitchCount + "구 : 헛스윙<br/>")){
+            if (inputText("- " + nowPitchCount + "구 : 헛스윙<br/>")){
               if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃<br/>");
               $("#sendText").click(function(event) {
                 strike(false);
@@ -833,7 +928,7 @@
             var tmp = "";
             var pos = "";
 
-            if (inputText(nowPitchCount + "구 : 타격<br/>")){
+            if (inputText("- " + nowPitchCount + "구 : 타격<br/>")){
 
               $("#hit_result").show();
               
@@ -1000,7 +1095,7 @@
 
           // 몸에 맞는 공
           $("#HBP").click(function(event){
-            if(inputText(nowPitchCount + "구 : 볼<br/>" + getNowBatter().name + " : 몸에 맞는 공<br/>")){
+            if(inputText("- " + nowPitchCount + "구 : 볼<br/>" + getNowBatter().name + " : 몸에 맞는 공<br/>")){
               $("#sendText").click(function(event) {
                 hitByPitch();
                 sendText();
