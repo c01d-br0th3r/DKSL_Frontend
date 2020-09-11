@@ -168,6 +168,8 @@ const getTeamBatterStat = (teamInfo, whatTheyWant) => {
 
 }
 
+const posName = ["투수", "포수", "1루수", "2루수", "3루수", "유격수", "좌익수", "중견수", "우익수", "지명타자"];
+
 const TopBottom = ['회초', '회말'];
 const ofTeam = ['away', 'home'];
 const dfTeam = ['home', 'away'];

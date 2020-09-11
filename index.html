@@ -302,8 +302,6 @@
       <li role="presentation" class="playerOptionItem"><a role="menuitem" id="posChange" href="#">포지션 교체</a></li>
     </ul>
 
-
-
   </div>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -708,7 +706,7 @@
               $("#sendText").click(function(event) { appendText((order*1 + 1) + "번 타자 " + subPlayer.playerName + "<br/>"); });
             }
             else {
-              appendText(getKeyByValue(posCode, getBatterByOrder(team, order).position) + " " + getBatterByOrder(team, order).name + " : " + getKeyByValue(posCode, getBatterByOrder(team, order).position) + " " + subPlayer.playerName + "(으)로 교체<br/>");
+              appendText(posName[getBatterByOrder(team, order).position - 1] + " " + getBatterByOrder(team, order).name + " : " + posName[getBatterByOrder(team, order).position - 1] + " " + subPlayer.playerName + "(으)로 교체<br/>");
             }
 
             $("#sendText").click(function(event) {
@@ -752,6 +750,36 @@
 
           // 포지션 교체
           changePosition = (team, player, pos) => {
+
+            if (pos == 9){
+              alert("지명타자로는 포지션 교체를 할 수 없습니다.");
+              return;
+            }
+
+            var nowPlayer = getPlayerByPosition(team, player.playerPos);
+            var anotherPlayer = getPlayerByPosition(team, pos + 1);
+
+            appendText(posName[nowPlayer.position - 1] + " " + nowPlayer.name + " : " + posName[pos] + "(으)로 수비위치 변경<br/>");
+            appendText(posName[pos] + " " + anotherPlayer.name + " : " + posName[nowPlayer.position - 1] + "(으)로 수비위치 변경<br/>");
+
+            $("#sendText").click(function(event) {
+  
+              anotherPlayer.position = nowPlayer.position;
+              nowPlayer.position = "" + (pos + 1);
+
+              if (anotherPlayer.position == "1"){
+                liveInfo[team].nowPitcher++;
+                liveInfo[team].pitcherInfo[liveInfo[team].nowPitcher] = getPitcher(anotherPlayer.ID, anotherPlayer.name);
+              }
+              else if (nowPlayer.position == "1"){
+                liveInfo[team].nowPitcher++;
+                liveInfo[team].pitcherInfo[liveInfo[team].nowPitcher] = getPitcher(nowPlayer.ID, nowPlayer.name);;
+              }
+
+              renewPlayerList();
+              sendText();
+
+            });
 
           }
 
