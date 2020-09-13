@@ -68,7 +68,8 @@ const getTeamInfo = (teamID, teamName, batters, pitcher) => {
 		batterInfo : batterInfo,
 		nowBatter : 0,
 		pitcherInfo : pitcherInfo,
-		nowPitcher : 0
+		nowPitcher : 0,
+		waitForNextBatter : false
 	}
 
 	return teamInfo;

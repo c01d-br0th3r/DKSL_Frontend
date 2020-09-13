@@ -16,6 +16,8 @@ var homeSubPlayers = [];
 var textForSend = "";
 var situationType = 0;
 
+var waitForNextBatter = false;
+
 // 상황 이후 목적베이스
 var afterSituBase = [0, 0, 0];
 
@@ -133,11 +135,20 @@ const getHomeTeam = function () {
 
 const getPlayerByPosition = function(team, pos){
 
-    console.log(pos);
-
     for (i in liveInfo[team].batterInfo){
         if (liveInfo[team].batterInfo[i].batters[liveInfo[team].batterInfo[i].now].position == pos){
-            console.log(liveInfo[team].batterInfo[i].batters[liveInfo[team].batterInfo[i].now]);
+            return liveInfo[team].batterInfo[i].batters[liveInfo[team].batterInfo[i].now];
+        }
+    }
+
+    return false;
+
+}
+
+const getPlayerByID = function(team, ID){
+
+    for (i in liveInfo[team].batterInfo){
+        if (liveInfo[team].batterInfo[i].batters[liveInfo[team].batterInfo[i].now].ID == ID){
             return liveInfo[team].batterInfo[i].batters[liveInfo[team].batterInfo[i].now];
         }
     }
@@ -203,7 +214,7 @@ const setRunnerSitu = function (base, p, r) {
         $("#runner").show();
         $("#runnerHeader").html("<h2>" + (
             base + 1
-        ) + "루주자 타격 후 상황</h2>");
+        ) + "루주자 " + liveInfo.nowBase[base].name + " 타격 후 상황</h2>");
         var tmp = (base + 1) + "루주자 " + liveInfo.nowBase[base].name + " : ";
         var isOut = false;
         $("#runner").children().each(function (index, el) {
@@ -322,13 +333,13 @@ const renewPlayerList = function () {
     $("#awayTeamPlayers").children("ul").html("");
     $("#homeTeamPlayers").children("ul").html("");
     $("#awayTeamPlayers").children("ul").append("<div class=\"list-group-item-heading\" id=\"awayTeamName\">" + liveInfo.away.name + "</div>");
-    
+
     // 타자
     for (i in liveInfo.away.batterInfo) 
         $("#awayTeamPlayers").children("ul").append("<div class=\"list-group-item players\" id=\"awayPlayers\" order=\"" + (i) + "\" pos=\"" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].position + "\" player-name=\"" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].name + "\" player-id=\"" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].ID + "\">" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].name + " - " + getKeyByValue(posCode, liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].position) + "</div>");
     $("#homeTeamPlayers").children("ul").append("<div class=\"list-group-item-heading\" id=\"homeTeamName\">" + liveInfo.home.name + "</div>");
     for (i in liveInfo.home.batterInfo) 
-        $("#homeTeamPlayers").children("ul").append("<div class=\"list-group-item players\" id=\"homePlayers\" order=\"" + (i) + "\" pos=\"batter\" player-name=\"" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].name + "\" player-id=\"" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].ID + "\">" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].name + " - " + getKeyByValue(posCode, liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].position) + "</div>");
+        $("#homeTeamPlayers").children("ul").append("<div class=\"list-group-item players\" id=\"homePlayers\" order=\"" + (i) + "\" pos=\"" + liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].position + "\" player-name=\"" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].name + "\" player-id=\"" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].ID + "\">" + liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].name + " - " + getKeyByValue(posCode, liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].position) + "</div>");
     // 투수
     $("#awayTeamPlayers").children("ul").append("<div class=\"list-group-item players\" id=\"awayPlayers\" player-name=\"" + liveInfo.away.pitcherInfo[liveInfo.away.nowPitcher].name + "\" player-id=\"" + liveInfo.away.pitcherInfo[liveInfo.away.nowPitcher].ID + "\" pos=\"pitcher\">" + liveInfo.away.pitcherInfo[liveInfo.away.nowPitcher].name + "</div>");
     $("#homeTeamPlayers").children("ul").append("<div class=\"list-group-item players\" id=\"homePlayers\" player-name=\"" + liveInfo.away.pitcherInfo[liveInfo.away.nowPitcher].name + "\" player-id=\"" + liveInfo.home.pitcherInfo[liveInfo.home.nowPitcher].ID + "\" pos=\"pitcher\">" + liveInfo.home.pitcherInfo[liveInfo.home.nowPitcher].name + "</div>");
@@ -338,7 +349,29 @@ const renewPlayerList = function () {
 
     // 현재주자 표시
     for (i in liveInfo.nowBase){
-        $(".players[player-id=" + liveInfo.nowBase[i].ID + "][pos=batter]").append("  <strong>" + (i*1 + 1) + "루 주자</strong>");
+        console.log(liveInfo.nowBase[i].ID)
+        $(".players[player-id=" + liveInfo.nowBase[i].ID + "][pos!=pitcher]").append("  <strong>" + (i*1 + 1) + "루 주자</strong>");
+    }
+
+    // 포지션 겹침 경고
+    for (i in liveInfo.away.batterInfo){
+        for (j in liveInfo.away.batterInfo){
+            if (liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now] != liveInfo.away.batterInfo[j].batters[liveInfo.away.batterInfo[j].now]){
+                if (liveInfo.away.batterInfo[i].batters[liveInfo.away.batterInfo[i].now].position == liveInfo.away.batterInfo[j].batters[liveInfo.away.batterInfo[j].now].position){
+                    $(".players[player-id=" + liveInfo.away.batterInfo[j].batters[liveInfo.away.batterInfo[j].now].ID + "][pos!=pitcher]").append("  <strong style=\"color: red;\">!포지션 겹침!</strong>");
+                }
+            }
+        }
+    }
+    // 포지션 겹침 경고
+    for (i in liveInfo.home.batterInfo){
+        for (j in liveInfo.home.batterInfo){
+            if (liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now] != liveInfo.home.batterInfo[j].batters[liveInfo.home.batterInfo[j].now]){
+                if (liveInfo.home.batterInfo[i].batters[liveInfo.home.batterInfo[i].now].position == liveInfo.home.batterInfo[j].batters[liveInfo.home.batterInfo[j].now].position){
+                    $(".players[player-id=" + liveInfo.home.batterInfo[j].batters[liveInfo.home.batterInfo[j].now].ID + "][pos!=pitcher]").append("  <strong style=\"color: red;\">!포지션 겹침!</strong>");
+                }
+            }
+        }
     }
 
     // 대기선수 갱신 (현재 라인업에 들어가있는 명단 제거)

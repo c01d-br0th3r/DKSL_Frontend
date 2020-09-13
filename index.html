@@ -187,6 +187,10 @@
 
     <div class="container">
 
+    <div class="btn-group-lg" style="margin-bottom: 10px">
+      <button class="btn btn-default" id="nextBatter">다음 타자 IN</button>
+    </div>
+
     <div class="btn-group-lg" id="pitching" style="margin-bottom: 10px">
       <div class="btn-group-justified">피칭 결과</div>
       <button class="btn btn-default" id="Ball">B</button>
@@ -298,8 +302,10 @@
 
     <ul class="dropdown-menu" role="menu" id="runnerOption">
       <li role="presentation" class="dropdown-header" id="runnerOptionHeader"></li>
-      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="stolenBase" href="#">선수 교체</a></li>
-      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="posChange" href="#">포지션 교체</a></li>
+      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="stolenBase" href="#">도루로 진루</a></li>
+      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="stolen" href="#">도루 실패 아웃</a></li>
+      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="stolen" href="#">도루 실패 진루(실책)</a></li>
+      <li role="presentation" class="playerOptionItem"><a role="menuitem" id="stolen" href="#">견제사</a></li>
     </ul>
 
   </div>
@@ -330,6 +336,14 @@
                 liveInfo.nowBase[j] = getNowOffenseTeam().batterInfo[i].batters[getNowOffenseTeam().batterInfo[i].now];
               }
             }
+          }
+
+          if (liveInfo.waitForNextBatter){
+            $("#nextBatter").show();
+            $("#pitching").hide();
+          }
+          else{
+            $("#nextBatter").hide();
           }
 
           // 새 이닝
@@ -432,7 +446,9 @@
               sendText();
             }
             else {
-              nextBatter();
+              liveInfo.waitForNextBatter = true;
+              $("#nextBatter").show();
+              $("#pitching").hide();
             }
 
           }
@@ -463,7 +479,9 @@
             getNowPitcher().stat.R += RBI;
             getNowPitcher().stat.ER += RBI;
 
-            nextBatter();
+            liveInfo.waitForNextBatter = true;
+            $("#nextBatter").show();
+            $("#pitching").hide();
 
           }
 
@@ -494,7 +512,9 @@
             getNowPitcher().stat.R += RBI;
             getNowPitcher().stat.ER += RBI;
 
-            nextBatter();
+            liveInfo.waitForNextBatter = true;
+            $("#nextBatter").show();
+            $("#pitching").hide();
 
           }
 
@@ -522,7 +542,9 @@
             getNowPitcher().stat.R += RBI;
             getNowPitcher().stat.ER += RBI;
 
-            nextBatter();
+            liveInfo.waitForNextBatter = true;
+            $("#nextBatter").show();
+            $("#pitching").hide();
 
           }
 
@@ -566,7 +588,9 @@
             getNowPitcher().stat.R += RBI;
             getNowPitcher().stat.ER += RBI;
 
-            nextBatter();
+            liveInfo.waitForNextBatter = true;
+            $("#nextBatter").show();
+            $("#pitching").hide();
             clearBase();
 
           }
@@ -608,7 +632,9 @@
               sendText();
             }
             else {
-              nextBatter();
+              liveInfo.waitForNextBatter = true;
+              $("#nextBatter").show();
+              $("#pitching").hide();
             }
 
           }
@@ -650,7 +676,9 @@
               sendText();
             }
             else {
-              nextBatter();
+              liveInfo.waitForNextBatter = true;
+              $("#nextBatter").show();
+              $("#pitching").hide();
             }
 
           }
@@ -690,7 +718,9 @@
               sendText();
             }
             else {
-              nextBatter();
+              liveInfo.waitForNextBatter = true;
+              $("#nextBatter").show();
+              $("#pitching").hide();
             }
 
           }
@@ -756,22 +786,16 @@
               return;
             }
 
-            var nowPlayer = getPlayerByPosition(team, player.playerPos);
-            var anotherPlayer = getPlayerByPosition(team, pos + 1);
+            var nowPlayer = getPlayerByID(team, player.playerId);
 
             appendText(posName[nowPlayer.position - 1] + " " + nowPlayer.name + " : " + posName[pos] + "(으)로 수비위치 변경<br/>");
-            appendText(posName[pos] + " " + anotherPlayer.name + " : " + posName[nowPlayer.position - 1] + "(으)로 수비위치 변경<br/>");
+            $(".players[player-id=" + player.playerId + "]").append("")
 
             $("#sendText").click(function(event) {
   
-              anotherPlayer.position = nowPlayer.position;
               nowPlayer.position = "" + (pos + 1);
 
-              if (anotherPlayer.position == "1"){
-                liveInfo[team].nowPitcher++;
-                liveInfo[team].pitcherInfo[liveInfo[team].nowPitcher] = getPitcher(anotherPlayer.ID, anotherPlayer.name);
-              }
-              else if (nowPlayer.position == "1"){
+              if (nowPlayer.position == "1"){
                 liveInfo[team].nowPitcher++;
                 liveInfo[team].pitcherInfo[liveInfo[team].nowPitcher] = getPitcher(nowPlayer.ID, nowPlayer.name);;
               }
@@ -831,7 +855,9 @@
               sendText();
             }
             else {
-              nextBatter();
+              liveInfo.waitForNextBatter = true;
+              $("#nextBatter").show();
+              $("#pitching").hide();
             }
 
           }
@@ -898,6 +924,15 @@
           $("#runnerForceOutLoca").hide();
           $("#subPlayersDiv").hide();
           $("#subPlayersDivBack").hide();
+
+          // 다음타자 버튼
+          $("#nextBatter").click(function(event) {
+            liveInfo.waitForNextBatter = false;
+            nextBatter();
+            sendText();
+            $("#pitching").show();
+            $(this).hide();
+          });
 
           $("#clearText").click(function(event) {
             clearTextandAction();
