@@ -68,8 +68,7 @@ const getTeamInfo = (teamID, teamName, batters, pitcher) => {
 		batterInfo : batterInfo,
 		nowBatter : 0,
 		pitcherInfo : pitcherInfo,
-		nowPitcher : 0,
-		waitForNextBatter : false
+		nowPitcher : 0
 	}
 
 	return teamInfo;
@@ -150,7 +149,8 @@ const getGameInfo = (castId, league, away, home, ground) => {
 			Out : 0
 		},
 		textCast : ["", "", "", "", "", "", "", "", ""], 
-		ground : ground
+		ground : ground,
+		waitForNextBatter : false
 	};
 
 	return gameInfo;

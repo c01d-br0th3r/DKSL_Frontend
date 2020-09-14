@@ -157,6 +157,129 @@ const getPlayerByID = function(team, ID){
 
 }
 
+const setRunnerBtn = function () {
+
+    for (i in liveInfo.nowBase){
+        if (!isEmptyObject(liveInfo.nowBase[i])){
+            $("#runnerAfterHitRunnerSelect").children(".runner[base=" + ((i*1)+1)  + "]").show();
+            afterSituBase[(i*1)] = notMove;
+        }
+        else{
+            $("#runnerAfterHitRunnerSelect").children(".runner[base=" + ((i*1)+1)  + "]").hide();
+        }
+    }
+
+}
+
+const setRunnerAfterHitSendtext = function () {
+
+    setRunnerBtn();
+
+    $("#sendText").click(function(event) {
+
+        if (confirm("전송하시겠습니까? 다음타자로 바로 넘어갑니다")){
+
+            var RBI = moveRunner();
+
+            liveInfo.waitForNextBatter = false;
+
+            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
+            getNowOffenseTeam().totalScore += RBI;
+
+            nextBatter();
+
+            sendText();
+
+            $("#runnerAfterHitRunnerSelect").hide();
+            $("#runnerAfterHit").hide();
+            $("#pitching").show();
+            
+        }
+
+    });
+
+}
+
+const runnerSituAfterHit = function (base, p, r) {
+
+    $("#runner").hide();
+    $("#runner").children().each(function (index, el) {
+        $(el).unbind('click');
+    });
+    $("#runnerTagOutLoca").children().each(function (index, el) {
+        $(el).unbind('click');
+    });
+    $("#runnerForceOutLoca").children().each(function (index, el) {
+        $(el).unbind('click');
+    });
+
+    if (!isEmptyObject(liveInfo.nowBase[base - 1])) {
+
+        $("#runner").show();
+        $("#runnerHeader").html("<h2>" + (base) + "루주자 " + liveInfo.nowBase[base - 1].name + " 타격 후 추가진루 상황</h2>");
+
+        var tmp = (base) + "루주자 " + liveInfo.nowBase[base - 1].name + " : ";
+
+        $("#runner").children().each(function (index, el) {
+
+            $(el).click(function (event) {
+
+                switch ($(el).attr("id")) {
+
+                    case "tag": isOut = true;
+                        afterSituBase[base - 1] = tagOut;
+                        $("#runnerTagOutLoca").show();
+                        $("#runnerTagOutLoca").children().each(function (index, el) {
+                            $(el).click(function (event) {
+                                tmp += $(el).html() + " 태그아웃<br/>";
+                                appendText(tmp);
+                                $("#runnerTagOutLoca").hide();
+                            });
+                        });
+                        break;
+
+                    case "force": isOut = true;
+                        afterSituBase[base - 1] = forceOut;
+                        $("#runnerForceOutLoca").show();
+                        $("#runnerForceOutLoca").children().each(function (index, el) {
+                            $(el).click(function (event) {
+                                tmp += $(el).html() + " 포스아웃<br/>";
+                                appendText(tmp);
+                                $("#runnerForceOutLoca").hide();
+                            });
+                        });
+                        break;
+
+                    case "notMove": afterSituBase[base - 1] = notMove;
+                        break;
+
+                    case "2B": tmp += p + r + " 2루까지 진루<br/>";
+                        appendText(tmp);
+                        afterSituBase[base - 1] = to2B;
+                        break;
+
+                    case "3B": tmp += p + r + " 3루까지 진루<br/>";
+                        appendText(tmp);
+                        afterSituBase[base - 1] = to3B;
+                        break;
+
+                    case "home": tmp += p + r + " 홈인<br/>";
+                        appendText(tmp);
+                        afterSituBase[base - 1] = toHome;
+                        break;
+
+                }
+
+                $("#runner").hide();
+                $("#runnerAfterHitRunnerSelect").show();
+
+            });
+
+        });
+    }
+
+}
+
 const setRunnerSitu = function (base, p, r) {
     $("#runner").hide();
     $("#runner").children().each(function (index, el) {
@@ -187,7 +310,7 @@ const setRunnerSitu = function (base, p, r) {
                 case "번트안타":
                     hit(p, r);
                     break;
-                    // case "그라운드 홈런" : HR(p); break;
+                // case "그라운드 홈런" : HR(p); break;
                 case "땅볼 아웃":
                 case "땅볼로 출루":
                 case "플라이 아웃":
@@ -205,6 +328,7 @@ const setRunnerSitu = function (base, p, r) {
                     break;
             }
             sendText();
+            setRunnerAfterHitSendtext();
             setCountBoard();
             renewBase();
         });
@@ -219,7 +343,9 @@ const setRunnerSitu = function (base, p, r) {
         var isOut = false;
         $("#runner").children().each(function (index, el) {
             $(el).click(function (event) {
+
                 $("#ruuner").hide();
+
                 switch ($(el).attr("id")) {
                     case "tag": isOut = true;
                         afterSituBase[base] = tagOut;
@@ -260,7 +386,8 @@ const setRunnerSitu = function (base, p, r) {
                         afterSituBase[base] = toHome;
                         break;
                 }
-                if (! isOut) 
+
+                if (!isOut) 
                     setRunnerSitu(base - 1, p, r);
                 
             });
@@ -271,6 +398,7 @@ const setRunnerSitu = function (base, p, r) {
 }
 
 const moveRunnerWhenBB = function (base, move) {
+
     if (base > 2) 
         return;
      else if (isEmptyObject(liveInfo.nowBase[base])) {
@@ -289,6 +417,7 @@ const moveRunnerWhenBB = function (base, move) {
         afterSituBase[base] = notMove;
         move = false;
     } moveRunnerWhenBB(base + 1, move);
+
     if (move) {
         var toBase = (base + 2) + "루까지 진루";
         if (base > 1) 
@@ -296,6 +425,7 @@ const moveRunnerWhenBB = function (base, move) {
         
         appendText((base + 1) + "루주자 " + liveInfo.nowBase[base].name + " : " + toBase + "<br/>");
     }
+
     return;
 }
 
@@ -303,6 +433,7 @@ const moveRunner = function () {
     
     var tmpBase = [{}, {}, {}];
     var RBI = 0;
+
     for (var i = 2; i >= 0; i--) {
         if (! isEmptyObject(liveInfo.nowBase[i])) {
             switch (afterSituBase[i]) {
@@ -322,8 +453,11 @@ const moveRunner = function () {
             }
         }
     }
+
+    afterSituBase = [0, 0, 0];
     liveInfo.nowBase = tmpBase;
     return RBI;
+
 }
 
 const renewPlayerList = function () {
@@ -349,7 +483,6 @@ const renewPlayerList = function () {
 
     // 현재주자 표시
     for (i in liveInfo.nowBase){
-        console.log(liveInfo.nowBase[i].ID)
         $(".players[player-id=" + liveInfo.nowBase[i].ID + "][pos!=pitcher]").append("  <strong>" + (i*1 + 1) + "루 주자</strong>");
     }
 

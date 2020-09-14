@@ -187,10 +187,6 @@
 
     <div class="container">
 
-    <div class="btn-group-lg" style="margin-bottom: 10px">
-      <button class="btn btn-default" id="nextBatter">다음 타자 IN</button>
-    </div>
-
     <div class="btn-group-lg" id="pitching" style="margin-bottom: 10px">
       <div class="btn-group-justified">피칭 결과</div>
       <button class="btn btn-default" id="Ball">B</button>
@@ -227,7 +223,7 @@
     </div>
     
     <div class="btn-group-lg" id="fielder" style="margin-bottom: 10px">
-      <div class="btn-group-justified">타격상황 포지션</div>
+      <div class="btn-group-justified">수비 포지션</div>
       <button class="btn btn-default infielder" pos="1">투수</button>
       <button class="btn btn-default infielder" pos="2">포수</button>
       <button class="btn btn-default infielder" pos="3">1루수</button>
@@ -242,17 +238,25 @@
     </div>
 
     <div class="btn-group-lg" id="location" style="margin-bottom: 10px">
-      <div class="btn-group-justified">타격상황 포지션 상세위치</div>
+      <div class="btn-group-justified">수비 포지션 상세위치</div>
       <button class="btn btn-default loc">앞</button>
       <button class="btn btn-default loc">왼쪽</button>
       <button class="btn btn-default loc">오른쪽</button>
       <button class="btn btn-default loc">뒤</button>
     </div>
 
+    <div class="btn-group-lg" id="runnerAfterHitRunnerSelect" style="margin-bottom: 10px">
+      <div class="btn-group-justified" id="runnerAfterHitRunnerSelectHeader"><h1>타격상황이후 추가진루 주자</h1></div>
+      <button class="btn btn-default loc runner" base="1">1루 주자</button>
+      <button class="btn btn-default loc runner" base="2">2루 주자</button>
+      <button class="btn btn-default loc runner" base="3">3루 주자</button>
+      <button class="btn btn-default" id="nextBatter">없음 다음 타자 IN</button>
+    </div>
+
     <div class="btn-group-lg" id="runnerAfterHit" style="margin-bottom: 10px">
-      <div class="btn-group-justified" id="runnerAfterHitHeader"><h1></h1></div>
-      <button class="btn btn-default loc" id="tag">실책</button>
-      <button class="btn btn-default loc" id="force">주자의 재치</button>
+      <div class="btn-group-justified" id="runnerAfterHitHeader"><h1>타격상황이후 추가진루 상황</h1></div>
+      <button class="btn btn-default loc" id="error">실책</button>
+      <button class="btn btn-default loc" id="runnerSense">주자의 재치</button>
     </div>
 
     <div class="btn-group-lg" id="runner" style="margin-bottom: 10px">
@@ -291,9 +295,7 @@
     </div>
 
     <div class="panel panel-default" id="sendScript">
-      <div class="panel-heading">
-        전송 할 내용
-      </div>
+      <div class="panel-heading">전송 할 내용</div>
       <div class="panel-body" id="scriptContents">
       </div>
       <button class="btn btn-default" type="button" id="clearText">초기화</button>
@@ -345,11 +347,13 @@
           }
 
           if (liveInfo.waitForNextBatter){
-            $("#nextBatter").show();
+            $("#runnerAfterHitRunnerSelect").show();
+            setRunnerBtn();
+            setRunnerAfterHitSendtext();
             $("#pitching").hide();
           }
           else{
-            $("#nextBatter").hide();
+            $("#runnerAfterHitRunnerSelect").hide();
           }
 
           // 새 이닝
@@ -391,6 +395,7 @@
             liveInfo.nowCount.Strike = 0;
 
             renewPlayerList();
+            setCountBoard();
 
           }
 
@@ -453,7 +458,8 @@
             }
             else {
               liveInfo.waitForNextBatter = true;
-              $("#nextBatter").show();
+              $("#runnerAfterHitRunnerSelect").show();
+              setRunnerBtn();
               $("#pitching").hide();
               renewPlayerList();
             }
@@ -487,7 +493,8 @@
             getNowPitcher().stat.ER += RBI;
 
             liveInfo.waitForNextBatter = true;
-            $("#nextBatter").show();
+            $("#runnerAfterHitRunnerSelect").show();
+            setRunnerBtn();
             $("#pitching").hide();
             renewPlayerList();
 
@@ -521,7 +528,8 @@
             getNowPitcher().stat.ER += RBI;
 
             liveInfo.waitForNextBatter = true;
-            $("#nextBatter").show();
+            $("#runnerAfterHitRunnerSelect").show();
+            setRunnerBtn();
             $("#pitching").hide();
             renewPlayerList();
 
@@ -552,7 +560,8 @@
             getNowPitcher().stat.ER += RBI;
 
             liveInfo.waitForNextBatter = true;
-            $("#nextBatter").show();
+            $("#runnerAfterHitRunnerSelect").show();
+            setRunnerBtn();
             $("#pitching").hide();
             renewPlayerList();
 
@@ -599,7 +608,8 @@
             getNowPitcher().stat.ER += RBI;
 
             liveInfo.waitForNextBatter = true;
-            $("#nextBatter").show();
+            $("#runnerAfterHitRunnerSelect").show();
+            setRunnerBtn();
             $("#pitching").hide();
             clearBase();
             renewPlayerList();
@@ -644,7 +654,8 @@
             }
             else {
               liveInfo.waitForNextBatter = true;
-              $("#nextBatter").show();
+              $("#runnerAfterHitRunnerSelect").show();
+              setRunnerBtn();
               $("#pitching").hide();
               renewPlayerList();
             }
@@ -689,7 +700,8 @@
             }
             else {
               liveInfo.waitForNextBatter = true;
-              $("#nextBatter").show();
+              $("#runnerAfterHitRunnerSelect").show();
+              setRunnerBtn();
               $("#pitching").hide();
               renewPlayerList();
             }
@@ -732,7 +744,8 @@
             }
             else {
               liveInfo.waitForNextBatter = true;
-              $("#nextBatter").show();
+              $("#runnerAfterHitRunnerSelect").show();
+              setRunnerBtn();
               $("#pitching").hide();
               renewPlayerList();
             }
@@ -870,7 +883,8 @@
             }
             else {
               liveInfo.waitForNextBatter = true;
-              $("#nextBatter").show();
+              $("#runnerAfterHitRunnerSelect").show();
+              setRunnerBtn();
               $("#pitching").hide();
               renewPlayerList();
             }
@@ -939,6 +953,7 @@
           $("#runnerForceOutLoca").hide();
           $("#subPlayersDiv").hide();
           $("#subPlayersDivBack").hide();
+          $("#runnerAfterHit").hide();
 
           // 다음타자 버튼
           $("#nextBatter").click(function(event) {
@@ -946,12 +961,76 @@
             nextBatter();
             sendText();
             $("#pitching").show();
-            $(this).hide();
+            $("#runnerAfterHitRunnerSelect").hide();
           });
 
+          // 초기화 버튼
           $("#clearText").click(function(event) {
+
             clearTextandAction();
+
           });
+
+          // 타격상황이후 추가진루 상황
+          $("#runnerAfterHitRunnerSelect").children(".runner").each(function(index, el) {
+            
+            $(el).click(function(event) {
+            
+              var base = $(el).attr("base") * 1;
+
+              $("#runnerAfterHitRunnerSelect").hide();
+
+
+              $("#runnerAfterHitHeader").children("h1").html( base + "루 주자 타격상황이후 추가진루 상황");
+              $("#runnerAfterHit").show();
+              $("#runnerAfterHit").children().each(function(index, el) {
+                
+                $(el).click(function(event) {
+                  
+                  var result = $(el).html();
+
+                  switch(result){
+                    case "실책":
+                      $("#runnerAfterHit").hide();
+
+                      $("#fielder").show();
+                      $(".infielder").show();
+                      $(".outfielder").show();
+                      $(".onlyHit").hide();
+
+                      $("#fielder").children().each(function(index, el) {
+
+                        $(el).click(function(event) {
+
+                          runnerSituAfterHit(base, $(el).html() + " ", result + "으로");
+
+                          for (i in getNowDefenceTeam().batterInfo){
+                              if (getNowDefenceTeam().batterInfo[i].batters[getNowDefenceTeam().batterInfo[i].now].position == $(el).attr("pos")){
+                                getNowDefenceTeam().batterInfo[i].batters[getNowDefenceTeam().batterInfo[i].now].stat.E++;
+                              }
+                            }
+
+                        });   
+
+                      });
+                      break;
+
+                    case "주자의 재치":
+                      $("#runnerAfterHit").hide();
+                      runnerSituAfterHit(base, "", result + "로");
+                      break;
+                  }
+
+                  $(el).unbind("click");
+
+                });
+
+              });
+
+            });
+
+          });
+          
 
           // 볼 버튼 클릭 시
           $("#Ball").click(function(event){
@@ -1046,6 +1125,7 @@
                       $("#sendText").click(function(event) {
                           HR(pos);
                           sendText();
+                          setRunnerAfterHitSendtext();
                           setCountBoard();
                           renewBase();
                       });
@@ -1177,6 +1257,7 @@
               $("#sendText").click(function(event) {
                 hitByPitch();
                 sendText();
+                setRunnerAfterHitSendtext();
                 setCountBoard();
               });
             }
@@ -1188,6 +1269,7 @@
               $("#sendText").click(function(event) {
                 internationalBB();
                 sendText();
+                setRunnerAfterHitSendtext();
                 setCountBoard();
               });
             }
