@@ -454,8 +454,12 @@ const moveRunner = function () {
         }
     }
 
+    console.log(RBI);
+
     afterSituBase = [0, 0, 0];
+    
     liveInfo.nowBase = tmpBase;
+
     return RBI;
 
 }

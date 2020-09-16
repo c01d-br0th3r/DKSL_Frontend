@@ -585,8 +585,8 @@
             console.log(RBI);
 
             // 타자주자 홈인
-            getNowOffenseTeam().score[liveInfo.nowInning - 1]++;
-            getNowOffenseTeam().totalScore++;
+            getNowOffenseTeam().score[liveInfo.nowInning - 1] += RBI;
+            getNowOffenseTeam().totalScore += RBI;
 
             // 타자스탯 누적
             getNowBatter().result[liveInfo.nowInning - 1].push(resultCode[pos + " 홈런"]);
