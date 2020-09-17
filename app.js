@@ -43,7 +43,7 @@ app.get('/test', (req, res) => {
 app.get('/live/:gameId', (req, res) => {
   var gameId = req.params.gameId;
   if ((liveRoom.length - 1) < gameId){ res.sendFile(__dirname + '/404.html'); }
-	else { res.sendFile(__dirname + '/live.html'); }
+	else { res.sendFile(__dirname + '/dksl-live/live2/index.html'); }
 });
 
 io.on('connect', (socket) => {
