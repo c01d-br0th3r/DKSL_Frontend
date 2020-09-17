@@ -25,6 +25,7 @@ var liveRoom = [];
 
 app.use('/script', express.static(__dirname + "/script"));
 app.use('/live/static/js', express.static(__dirname + "/dksl-live/live2/static/js"));
+app.use('/static/js', express.static(__dirname + "/dksl-live/live2/static/js"));
 
 
 app.get("/", (req, res) => {
