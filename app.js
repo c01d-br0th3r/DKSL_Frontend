@@ -22,10 +22,11 @@ connection.connect();
 var liveRoom = [];
 //---------------------
 
-
-app.use('/script', express.static(__dirname + "/script"));
-app.use('/live/static/js', express.static(__dirname + "/dksl-live/live2/static/js"));
-
+app.use("/script", express.static(__dirname + "/script"));
+app.use(
+  "/live/static/js",
+  express.static(__dirname + "/dksl-live/live2/static/js")
+);
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
