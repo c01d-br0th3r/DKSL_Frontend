@@ -374,7 +374,7 @@
               teamName = liveInfo.away.name;
             }
 
-            textForSend += ("<br/>" + liveInfo.nowInning + TopBottom[liveInfo.nowTopBottom] + " " + teamName + " 공격<br/>");
+            appendText(liveInfo.nowInning + TopBottom[liveInfo.nowTopBottom] + " " + teamName);
 
             clearBase();
             renewBase();
@@ -389,7 +389,7 @@
             getNowOffenseTeam().nowBatter++;
             if (getNowOffenseTeam().nowBatter > 9) getNowOffenseTeam().nowBatter = 1;
 
-            textForSend += ("<br/>" + getNowOffenseTeam().nowBatter + "번 타자 " + getNowBatter().name + "<br/>");
+            appendText(getNowOffenseTeam().nowBatter + "번 타자 " + getNowBatter().name);
 
             liveInfo.nowCount.Ball = 0;
             liveInfo.nowCount.Strike = 0;
