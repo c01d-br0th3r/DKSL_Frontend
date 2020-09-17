@@ -231,7 +231,7 @@ const runnerSituAfterHit = function (base, p, r) {
                         $("#runnerTagOutLoca").show();
                         $("#runnerTagOutLoca").children().each(function (index, el) {
                             $(el).click(function (event) {
-                                tmp += $(el).html() + " 태그아웃<br/>";
+                                tmp += $(el).html() + " 태그아웃";
                                 appendText(tmp);
                                 $("#runnerTagOutLoca").hide();
                             });
@@ -243,7 +243,7 @@ const runnerSituAfterHit = function (base, p, r) {
                         $("#runnerForceOutLoca").show();
                         $("#runnerForceOutLoca").children().each(function (index, el) {
                             $(el).click(function (event) {
-                                tmp += $(el).html() + " 포스아웃<br/>";
+                                tmp += $(el).html() + " 포스아웃";
                                 appendText(tmp);
                                 $("#runnerForceOutLoca").hide();
                             });
@@ -253,17 +253,17 @@ const runnerSituAfterHit = function (base, p, r) {
                     case "notMove": afterSituBase[base - 1] = notMove;
                         break;
 
-                    case "2B": tmp += p + r + " 2루까지 진루<br/>";
+                    case "2B": tmp += p + r + " 2루까지 진루";
                         appendText(tmp);
                         afterSituBase[base - 1] = to2B;
                         break;
 
-                    case "3B": tmp += p + r + " 3루까지 진루<br/>";
+                    case "3B": tmp += p + r + " 3루까지 진루";
                         appendText(tmp);
                         afterSituBase[base - 1] = to3B;
                         break;
 
-                    case "home": tmp += p + r + " 홈인<br/>";
+                    case "home": tmp += p + r + " 홈인";
                         appendText(tmp);
                         afterSituBase[base - 1] = toHome;
                         break;
@@ -352,7 +352,7 @@ const setRunnerSitu = function (base, p, r) {
                         $("#runnerTagOutLoca").show();
                         $("#runnerTagOutLoca").children().each(function (index, el) {
                             $(el).click(function (event) {
-                                tmp += $(el).html() + " 태그아웃<br/>";
+                                tmp += $(el).html() + " 태그아웃";
                                 appendText(tmp);
                                 setRunnerSitu(base - 1, p, r);
                                 $("#runnerTagOutLoca").hide();
@@ -364,7 +364,7 @@ const setRunnerSitu = function (base, p, r) {
                         $("#runnerForceOutLoca").show();
                         $("#runnerForceOutLoca").children().each(function (index, el) {
                             $(el).click(function (event) {
-                                tmp += $(el).html() + " 포스아웃<br/>";
+                                tmp += $(el).html() + " 포스아웃";
                                 appendText(tmp);
                                 setRunnerSitu(base - 1, p, r);
                                 $("#runnerForceOutLoca").hide();
@@ -373,15 +373,15 @@ const setRunnerSitu = function (base, p, r) {
                         break;
                     case "notMove": afterSituBase[base] = notMove;
                         break;
-                    case "2B": tmp += "2루까지 진루<br/>";
+                    case "2B": tmp += "2루까지 진루";
                         appendText(tmp);
                         afterSituBase[base] = to2B;
                         break;
-                    case "3B": tmp += "3루까지 진루<br/>";
+                    case "3B": tmp += "3루까지 진루";
                         appendText(tmp);
                         afterSituBase[base] = to3B;
                         break;
-                    case "home": tmp += "홈인<br/>";
+                    case "home": tmp += "홈인";
                         appendText(tmp);
                         afterSituBase[base] = toHome;
                         break;
@@ -423,7 +423,7 @@ const moveRunnerWhenBB = function (base, move) {
         if (base > 1) 
             toBase = "홈인";
         
-        appendText((base + 1) + "루주자 " + liveInfo.nowBase[base].name + " : " + toBase + "<br/>");
+        appendText((base + 1) + "루주자 " + liveInfo.nowBase[base].name + " : " + toBase)
     }
 
     return;
