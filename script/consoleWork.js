@@ -68,19 +68,19 @@ const clearText = function () {
     });
 }
 
-const inputText = function (text) {
+const inputText = function (text, className="") {
     if (textForSend != "") {
         alert("이미 입력한 내용부터 전송해주세요.");
         return false;
     } else {
-        textForSend += text;
-        $("#scriptContents").html(textForSend);
+        $("#scriptContents").html("");
+        appendText(text, className);
         return true;
     }
 }
 
-const appendText = function (text) {
-    textForSend += text;
+const appendText = function (text, className="") {
+    textForSend += "<div class=\"textCast " + className + "\">" + text + "</div>";
     $("#scriptContents").append(text);
 }
 

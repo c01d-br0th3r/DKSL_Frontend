@@ -759,11 +759,11 @@
 
             // 현재타자일 경우
             if (getNowBatter() == getBatterByOrder(team, order)){
-              appendText((order*1 + 1) + "번 타자 " + getBatterByOrder(team, order).name + " : 대타 " + subPlayer.playerName + "(으)로 교체<br/>");
-              $("#sendText").click(function(event) { appendText((order*1 + 1) + "번 타자 " + subPlayer.playerName + "<br/>"); });
+              appendText((order*1 + 1) + "번 타자 " + getBatterByOrder(team, order).name + " : 대타 " + subPlayer.playerName + "(으)로 교체");
+              $("#sendText").click(function(event) { appendText((order*1 + 1) + "번 타자 " + subPlayer.playerName); });
             }
             else {
-              appendText(posName[getBatterByOrder(team, order).position - 1] + " " + getBatterByOrder(team, order).name + " : " + posName[getBatterByOrder(team, order).position - 1] + " " + subPlayer.playerName + "(으)로 교체<br/>");
+              appendText(posName[getBatterByOrder(team, order).position - 1] + " " + getBatterByOrder(team, order).name + " : " + posName[getBatterByOrder(team, order).position - 1] + " " + subPlayer.playerName + "(으)로 교체");
             }
 
             $("#sendText").click(function(event) {
@@ -794,7 +794,7 @@
 
             var newPitcher = getPitcher(nextPitcher.playerId, nextPitcher.playerName);
 
-            appendText("투수 " + getNowTeamPitcher(team).name + " : 투수 " + nextPitcher.playerName + "(으)로 교체<br/>");
+            appendText("투수 " + getNowTeamPitcher(team).name + " : 투수 " + nextPitcher.playerName + "(으)로 교체");
 
             $("#sendText").click(function(event) {
               liveInfo[team].nowPitcher++;
@@ -815,7 +815,7 @@
 
             var nowPlayer = getPlayerByID(team, player.playerId);
 
-            appendText(posName[nowPlayer.position - 1] + " " + nowPlayer.name + " : " + posName[pos] + "(으)로 수비위치 변경<br/>");
+            appendText(posName[nowPlayer.position - 1] + " " + nowPlayer.name + " : " + posName[pos] + "(으)로 수비위치 변경");
             $(".players[player-id=" + player.playerId + "]").append("")
 
             $("#sendText").click(function(event) {
@@ -1035,7 +1035,7 @@
           // 볼 버튼 클릭 시
           $("#Ball").click(function(event){
             if(inputText("- " + nowPitchCount + "구 : 볼<br/>")){
-              if (liveInfo.nowCount.Ball == 3) appendText(getNowBatter().name + " : 볼넷<br/>");
+              if (liveInfo.nowCount.Ball == 3) appendText(getNowBatter().name + " : 볼넷");
               $("#sendText").click(function(event) {
                 ball();
                 sendText();
@@ -1047,7 +1047,7 @@
           // 스트라이크 
           $("#Strike").click(function(event){
             if(inputText("- " + nowPitchCount + "구 : 스트라이크<br/>")){
-              if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃<br/>");
+              if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃");
               $("#sendText").click(function(event) {
                 strike(false);
                 sendText();
@@ -1058,7 +1058,7 @@
 
           // 파울
           $("#Foul").click(function(event){
-            if (inputText("- " + nowPitchCount + "구 : 파울<br/>")){
+            if (inputText("- " + nowPitchCount + "구 : 파울")){
               $("#sendText").click(function(event) {
                 strike(true);
                 sendText();
@@ -1070,7 +1070,7 @@
           // 헛스윙
           $("#Swing").click(function(event){
             if (inputText("- " + nowPitchCount + "구 : 헛스윙<br/>")){
-              if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃<br/>");
+              if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃");
               $("#sendText").click(function(event) {
                 strike(false);
                 sendText();
@@ -1085,7 +1085,7 @@
             var tmp = "";
             var pos = "";
 
-            if (inputText("- " + nowPitchCount + "구 : 타격<br/>")){
+            if (inputText("- " + nowPitchCount + "구 : 타격")){
 
               $("#hit_result").show();
               
@@ -1117,7 +1117,7 @@
                       else {
                         tmp += pos + " " + loca + " ";
                       }
-                      tmp += result + "<br/>";
+                      tmp += result;
 
                       appendText(tmp);
                       $("#fielder").hide();
@@ -1165,7 +1165,7 @@
                       $("#fielder").hide();
                       
                       if (pos == "우중간" || pos == "좌중간"){
-                        tmp += result + "<br/>";
+                        tmp += result;
                         appendText(tmp);
                         setRunnerSitu(2, pos, result);
                       }
@@ -1175,7 +1175,7 @@
                         $("#location").children().each(function(index, el) {
                           $(el).click(function(event) {
                             
-                            tmp += $(el).html() + " " + result + "<br/>";
+                            tmp += $(el).html() + " " + result;
                             appendText(tmp);
                             $("#location").hide();
                             
@@ -1226,10 +1226,10 @@
 
                       switch(result){
                         case "땅볼 아웃" : case "땅볼로 출루" : case "병살타" : case "삼중살" :
-                          tmp += pos + " 앞 " + result + "<br/>";
+                          tmp += pos + " 앞 " + result;
                           break;
                         default :
-                        tmp += pos + " " + result + "<br/>";
+                        tmp += pos + " " + result;
                       }
 
 
@@ -1253,7 +1253,8 @@
 
           // 몸에 맞는 공
           $("#HBP").click(function(event){
-            if(inputText("- " + nowPitchCount + "구 : 볼<br/>" + getNowBatter().name + " : 몸에 맞는 공<br/>")){
+            if(inputText("- " + nowPitchCount + "구 : 볼")){
+              appendText(getNowBatter().name + " : 몸에 맞는 공");
               $("#sendText").click(function(event) {
                 hitByPitch();
                 sendText();
@@ -1265,7 +1266,7 @@
 
           // 고의사구
           $("#IBB").click(function(event){
-            if(inputText(getNowBatter().name + " : 고의사구<br/>")){
+            if(inputText(getNowBatter().name + " : 고의사구")){
               $("#sendText").click(function(event) {
                 internationalBB();
                 sendText();
