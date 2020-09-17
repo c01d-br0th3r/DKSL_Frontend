@@ -3,6 +3,8 @@ const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
+const port = 4000;
+
 // mysql
 const mysql = require('mysql');
 const connection = mysql.createConnection({
@@ -152,6 +154,6 @@ app.get('*', (req, res) => {
   res.sendFile(__dirname + '/404.html');
 });
 
-http.listen(3000, () => {
-  console.log('Connected at 3000');
+http.listen(port, () => {
+  console.log('Connected at ' + port);
 });
