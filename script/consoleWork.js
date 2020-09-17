@@ -423,7 +423,7 @@ const moveRunnerWhenBB = function (base, move) {
         if (base > 1) 
             toBase = "홈인";
         
-        appendText((base + 1) + "루주자 " + liveInfo.nowBase[base].name + " : " + toBase)
+        appendText((base + 1) + "루주자 " + liveInfo.nowBase[base].name + " : " + toBase);
     }
 
     return;
