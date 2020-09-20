@@ -1034,7 +1034,7 @@
 
           // 볼 버튼 클릭 시
           $("#Ball").click(function(event){
-            if(inputText("- " + nowPitchCount + "구 : 볼<br/>")){
+            if(inputText("- " + nowPitchCount + "구 : 볼")){
               if (liveInfo.nowCount.Ball == 3) appendText(getNowBatter().name + " : 볼넷");
               $("#sendText").click(function(event) {
                 ball();
@@ -1046,7 +1046,7 @@
 
           // 스트라이크 
           $("#Strike").click(function(event){
-            if(inputText("- " + nowPitchCount + "구 : 스트라이크<br/>")){
+            if(inputText("- " + nowPitchCount + "구 : 스트라이크")){
               if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃");
               $("#sendText").click(function(event) {
                 strike(false);
@@ -1069,7 +1069,7 @@
 
           // 헛스윙
           $("#Swing").click(function(event){
-            if (inputText("- " + nowPitchCount + "구 : 헛스윙<br/>")){
+            if (inputText("- " + nowPitchCount + "구 : 헛스윙")){
               if (liveInfo.nowCount.Strike == 2) appendText(getNowBatter().name + " : 삼진아웃");
               $("#sendText").click(function(event) {
                 strike(false);
