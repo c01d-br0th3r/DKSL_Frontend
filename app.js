@@ -31,8 +31,9 @@ app.use(
 
 app.use('/script', express.static(__dirname + "/script"));
 app.use('/live/static/js', express.static(__dirname + "/dksl-live/live2/static/js"));
+app.use('/live/static/css', express.static(__dirname + "/dksl-live/live2/static/css"));
 app.use('/static/js', express.static(__dirname + "/dksl-live/live2/static/js"));
-
+app.use('/static/css', express.static(__dirname + "/dksl-live/live2/static/css"));
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
