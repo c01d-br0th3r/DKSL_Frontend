@@ -1,21 +1,31 @@
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
-const io = require("socket.io")(http);
 
 const port = 4000;
 
+const options = { pingTimeout: 3000, pingInterval: 5000 };
+const io = require("socket.io")(http, options);
+
 // mysql
 const mysql = require("mysql");
-const connection = mysql.createConnection({
+/*const connection = mysql.createConnection({
   host: "49.50.172.42",
   port: "3306",
   user: "server",
   password: "tlstkddn!",
   database: "dksl_live",
+});*/
+const pool = mysql.createPool({
+  host: "49.50.172.42",
+  port: "3306",
+  user: "server",
+  password: "tlstkddn!",
+  database: "dksl_live",
+  connectionLimit: 2
 });
 
-connection.connect();
+//connection.connect();
 // mysql end
 
 // 생성된 중계방 정보-----
@@ -70,57 +80,79 @@ io.on("connect", (socket) => {
 
   // 리그 정보 요청 시
   socket.on("getLeagues", () => {
-    connection.query("SELECT * from league_info ", function (
-      err,
-      results,
-      fields
-    ) {
-      if (err) {
-        console.log(err);
-      } else {
-        io.emit("sendLeagues", results);
-      }
+
+    pool.getConnection(function(err, conn){
+
+      conn.query("SELECT * from league_info ", function (err,results,fields) {
+        if (err) {
+          console.log(err);
+        } else {
+          io.emit("sendLeagues", results);
+        }
+      });
+
+      conn.release();
+
     });
+
   });
 
   // 팀 정보 요청 시
   socket.on("getTeams", (league_id) => {
-    connection.query(
-      "SELECT * from team_info where leagueId = " + league_id,
-      function (err, results, fields) {
+
+    pool.getConnection(function(err, conn){
+
+      conn.query("SELECT * from team_info where leagueId = " + league_id, function (err, results, fields) {
         if (err) {
           console.log(err);
         } else {
           io.emit("sendTeams", results);
         }
-      }
-    );
+      });
+
+      conn.release();
+
+    });
+
   });
 
   // 선수 정보 요청 시
   socket.on("getAwayPlayers", (team_id) => {
-    connection.query(
-      "SELECT * from player_info where teamId = " + team_id,
-      function (err, results, fields) {
+
+    pool.getConnection(function(err, conn){
+
+      connection.query("SELECT * from player_info where teamId = " + team_id, function (err, results, fields) {
         if (err) {
           console.log(err);
         } else {
           io.emit("sendAwayPlayers", results);
         }
-      }
-    );
+      });
+
+      conn.release();
+
+    });
+
   });
   socket.on("getHomePlayers", (team_id) => {
-    connection.query(
-      "SELECT * from player_info where teamId = " + team_id,
-      function (err, results, fields) {
-        if (err) {
-          console.log(err);
-        } else {
-          io.emit("sendHomePlayers", results);
+
+    pool.getConnection(function(err, conn){
+
+      conn.query(
+        "SELECT * from player_info where teamId = " + team_id,
+        function (err, results, fields) {
+          if (err) {
+            console.log(err);
+          } else {
+            io.emit("sendHomePlayers", results);
+          }
         }
-      }
-    );
+      );
+
+      conn.release();
+
+    });
+    
   });
 
   // 중계방 생성 요청 시
@@ -153,67 +185,80 @@ io.on("connect", (socket) => {
     var away = [];
     var home = [];
 
-    connection.query(
-      "SELECT playerId, playerName from player_info where teamId = " +
-        liveRoom[gameId].away.ID,
-      function (err, results, fields) {
-        if (err) {
-          console.log(err);
-        } else {
-          away = results;
-          connection.query(
-            "SELECT playerId, playerName from player_info where teamId = " +
-              liveRoom[gameId].home.ID,
-            function (err, results, fields) {
-              if (err) {
-                console.log(err);
-              } else {
-                home = results;
-                socket.emit("sendLiveInfo", liveRoom[gameId], away, home);
+    pool.getConnection(function(err, conn){
+
+      conn.query(
+        "SELECT playerId, playerName from player_info where teamId = " +
+          liveRoom[gameId].away.ID,
+        function (err, results, fields) {
+          if (err) {
+            console.log(err);
+          } else {
+            away = results;
+            conn.query(
+              "SELECT playerId, playerName from player_info where teamId = " +
+                liveRoom[gameId].home.ID,
+              function (err, results, fields) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  home = results;
+                  socket.emit("sendLiveInfo", liveRoom[gameId], away, home);
+                }
               }
-            }
-          );
+            );
+          }
         }
-      }
-    );
+      );
+
+      conn.release();
+
+    });
+
   });
 
   // 선수개별 정보 요청 시
   socket.on("getPlayerStat", (playerId) => {
 
-    connection.query("SELECT * from batter_stat where playerId = " + playerId, function(err, results, fields){
+    pool.getConnection(function(err, conn){
 
-      var batter_stat = { 
-        total: [],
-        yearly: []
-      };
+      conn.query("SELECT * from batter_stat where playerId = " + playerId, function(err, results, fields){
 
-      for (j in results[0]){
-        batter_stat.total[j] = 0;
-      }
+        var batter_stat = { 
+          total: [],
+          yearly: []
+        };
 
-      for (i in results){
-
-        batter_stat.yearly.push(results[i]);
-
-        for (j in results[i]){
-          switch(j){
-            case "playerId": case "year": 
-            case "AVG": case "OBP": case "SLG": case "OPS": break;
-            default: batter_stat.total[j] += results[i][j];
-          }
+        for (j in results[0]){
+          batter_stat.total[j] = 0;
         }
 
-      }
+        for (i in results){
 
-      batter_stat.total["AVG"] = batter_stat.total["H"] / batter_stat.total["AB"];
-      batter_stat.total["OBP"] = (batter_stat.total["H"] + batter_stat.total["BB"] + batter_stat.total["HBP"]) / batter_stat.total["PA"];
-      batter_stat.total["SLG"] = batter_stat.total["TB"] / batter_stat.total["AB"];
-      batter_stat.total["OPS"] = batter_stat.total["OBP"] + batter_stat.total["SLG"];
+          batter_stat.yearly.push(results[i]);
 
-      console.log(batter_stat);
+          for (j in results[i]){
+            switch(j){
+              case "playerId": case "year": 
+              case "AVG": case "OBP": case "SLG": case "OPS": break;
+              default: batter_stat.total[j] += results[i][j];
+            }
+          }
 
-      socket.emit("sendPlayerStat", batter_stat);
+        }
+
+        batter_stat.total["AVG"] = batter_stat.total["H"] / batter_stat.total["AB"];
+        batter_stat.total["OBP"] = (batter_stat.total["H"] + batter_stat.total["BB"] + batter_stat.total["HBP"]) / batter_stat.total["PA"];
+        batter_stat.total["SLG"] = batter_stat.total["TB"] / batter_stat.total["AB"];
+        batter_stat.total["OPS"] = batter_stat.total["OBP"] + batter_stat.total["SLG"];
+
+        console.log(batter_stat);
+
+        socket.emit("sendPlayerStat", batter_stat);
+
+      });
+
+      conn.release();
 
     });
 
