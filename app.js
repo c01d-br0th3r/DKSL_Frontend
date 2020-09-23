@@ -121,7 +121,7 @@ io.on("connect", (socket) => {
 
     pool.getConnection(function(err, conn){
 
-      connection.query("SELECT * from player_info where teamId = " + team_id, function (err, results, fields) {
+      conn.query("SELECT * from player_info where teamId = " + team_id, function (err, results, fields) {
         if (err) {
           console.log(err);
         } else {
