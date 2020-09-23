@@ -178,6 +178,28 @@ io.on("connect", (socket) => {
     );
   });
 
+  // 선수개별 정보 요청 시
+  socket.on("getPlayerStat", (playerId) => {
+
+    connection.query("SELECT * from batter_stat where playerId = " + playerId, function(err, results, fields){
+
+      var batter_stat = { 
+        total: [],
+        yearly: []
+      };
+
+      for (i in results){
+        batter_stat.yearly.push(results[i]);
+        batter_stat.total += results[i];
+      }
+
+          
+      socket.emit("sendPlayerStat", batter_stat);
+
+    });
+
+  });
+
   // 로그인 요청 시
   socket.on("login", (name) => {
     console.log(name + " now log in.");
