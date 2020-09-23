@@ -188,12 +188,31 @@ io.on("connect", (socket) => {
         yearly: []
       };
 
-      for (i in results){
-        batter_stat.yearly.push(results[i]);
-        batter_stat.total += results[i];
+      for (j in results[0]){
+        batter_stat.total[j] = 0;
       }
 
-          
+      for (i in results){
+
+        batter_stat.yearly.push(results[i]);
+
+        for (j in results[i]){
+          switch(j){
+            case "playerId": case "year": 
+            case "AVG": case "OBP": case "SLG": case "OPS": break;
+            default: batter_stat.total[j] += results[i][j];
+          }
+        }
+
+      }
+
+      batter_stat.total["AVG"] = batter_stat.total["H"] / batter_stat.total["AB"];
+      batter_stat.total["OBP"] = (batter_stat.total["H"] + batter_stat.total["BB"] + batter_stat.total["HBP"]) / batter_stat.total["PA"];
+      batter_stat.total["SLG"] = batter_stat.total["TB"] / batter_stat.total["AB"];
+      batter_stat.total["OPS"] = batter_stat.total["OBP"] + batter_stat.total["SLG"];
+
+      console.log(batter_stat);
+
       socket.emit("sendPlayerStat", batter_stat);
 
     });
