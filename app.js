@@ -9,13 +9,15 @@ const io = require("socket.io")(http, options);
 
 // mysql
 const mysql = require("mysql");
-/*const connection = mysql.createConnection({
+/*
+const connection = mysql.createConnection({
   host: "49.50.172.42",
   port: "3306",
   user: "server",
   password: "tlstkddn!",
   database: "dksl_live",
-});*/
+});
+*/
 const pool = mysql.createPool({
   host: "49.50.172.42",
   port: "3306",
