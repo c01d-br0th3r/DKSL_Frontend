@@ -7,7 +7,7 @@ interface IStatObj {
   R: number;
   H: number;
   _2B: number;
-  _3b: number;
+  _3B: number;
   HR: number;
   TB: number;
   RBI: number;
