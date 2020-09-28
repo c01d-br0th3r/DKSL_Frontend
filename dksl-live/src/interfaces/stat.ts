@@ -41,7 +41,32 @@ interface IStatObj {
   RF: number;
 }
 
-export interface IStat {
+interface IBatterStat {
   total: IStatObj;
   yearly: IStatObj[];
+}
+
+interface IPlayerInfo {
+  Bat_Throw: string;
+  backNum: number;
+  birthday: string;
+  playerName: string;
+  playerPhoto: string;
+  position: number;
+  teamId: number;
+  wasPro: number;
+}
+
+interface ITeamInfo {
+  foundingYear: number;
+  joinYear: number;
+  leagueId: number;
+  teamId: number;
+  teamName: string;
+}
+
+export interface IStat {
+  player_info: IPlayerInfo;
+  batter_stat: IBatterStat;
+  teamInfo: ITeamInfo;
 }
