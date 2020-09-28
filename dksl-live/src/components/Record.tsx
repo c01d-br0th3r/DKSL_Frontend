@@ -1,6 +1,7 @@
 import React from "react";
 import { ILive } from "../interfaces/live";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 interface IProps {
   live: ILive;
@@ -44,6 +45,11 @@ const Pinch = styled.span`
   opacity: 0.7;
 `;
 
+const SLink = styled(Link)`
+  width: 100%;
+  text-align: center;
+`;
+
 const Record: React.FC<IProps> = ({ live }) => {
   return (
     <div>
@@ -66,8 +72,10 @@ const Record: React.FC<IProps> = ({ live }) => {
               return info.batters.map((batter, index) => (
                 <tr key={index}>
                   <td>
-                    {batter.name}{" "}
-                    {info.now !== 0 && index !== 0 && <Pinch>대</Pinch>}
+                    <SLink to={`/stat/${batter.ID}`}>
+                      {batter.name}{" "}
+                      {info.now !== 0 && index !== 0 && <Pinch>대</Pinch>}
+                    </SLink>
                   </td>
                   <td>{batter.stat.AB}</td>
                   <td>{batter.stat.H}</td>
@@ -126,8 +134,10 @@ const Record: React.FC<IProps> = ({ live }) => {
               return info.batters.map((batter, index) => (
                 <tr key={index}>
                   <td>
-                    {batter.name}{" "}
-                    {info.now !== 0 && index !== 0 && <Pinch>대</Pinch>}
+                    <SLink to={`/stat/${batter.ID}`}>
+                      {batter.name}{" "}
+                      {info.now !== 0 && index !== 0 && <Pinch>대</Pinch>}
+                    </SLink>
                   </td>
                   <td>{batter.stat.AB}</td>
                   <td>{batter.stat.H}</td>
