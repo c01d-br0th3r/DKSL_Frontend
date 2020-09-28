@@ -7,6 +7,10 @@ const GlobalStyle = createGlobalStyle`
         box-sizing: border-box;
         font-family: 'Noto Sans KR', sans-serif !important;
     }
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
     button {
         &:focus {
           outline: none; 
