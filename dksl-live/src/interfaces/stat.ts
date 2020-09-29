@@ -1,4 +1,4 @@
-interface IStatObj {
+interface IBatterStatObj {
   playerId: number;
   year: number;
   G: number;
@@ -42,8 +42,39 @@ interface IStatObj {
 }
 
 interface IBatterStat {
-  total: IStatObj;
-  yearly: IStatObj[];
+  total: IBatterStatObj;
+  yearly: IBatterStatObj[];
+}
+
+interface IPitcherObj {
+  AB: number;
+  BB: number;
+  BK: number;
+  Batters: number;
+  ER: number;
+  ERA: number;
+  G: number;
+  H: number;
+  HBP: number;
+  HLD: number;
+  HR: number;
+  IP: number;
+  K: number;
+  L: number;
+  NP: number;
+  R: number;
+  SAC: number;
+  SF: number;
+  SV: number;
+  W: number;
+  WP: number;
+  playerId: number;
+  year: number;
+}
+
+interface IPitcherStat {
+  total: IPitcherObj;
+  yearly: IPitcherObj[];
 }
 
 interface IPlayerInfo {
@@ -53,20 +84,12 @@ interface IPlayerInfo {
   playerName: string;
   playerPhoto: string;
   position: number;
-  teamId: number;
-  wasPro: number;
-}
-
-interface ITeamInfo {
-  foundingYear: number;
-  joinYear: number;
-  leagueId: number;
-  teamId: number;
   teamName: string;
+  wasPro: number;
 }
 
 export interface IStat {
   player_info: IPlayerInfo;
   batter_stat: IBatterStat;
-  teamInfo: ITeamInfo;
+  pitcher_stat: IPitcherStat;
 }
