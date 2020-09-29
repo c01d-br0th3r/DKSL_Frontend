@@ -14,10 +14,12 @@ const StatContainer: React.FC<RouteComponentProps<MatchProps>> = ({
   const [stat, setStat] = useState<IStat | null>(null);
   useEffect(() => {
     const fetchStat = async (id: number) => {
-      const { data: stat } = await apis.fetchPlayerStat(id);
-      const teamId = stat.player_info.teamId;
-      const { data } = await apis.fetchTeamInfo(teamId);
-      setStat({ ...stat, teamInfo: data[0] });
+      try {
+        const { data: stat } = await apis.fetchPlayerStat(id);
+        setStat(stat);
+      } catch (e) {
+        console.log(e);
+      }
     };
     const id = parseInt(match.params.id);
     fetchStat(id);
