@@ -7,7 +7,7 @@ import Record from "../../components/Record";
 import Scoreboard from "../../components/Scoreboard";
 import "./Main.css";
 
-const socket: any = socketio.connect("http://localhost:4000");
+const socket: any = socketio.connect("http://49.50.172.42:3002/");
 const inning: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 interface MatchParams {
