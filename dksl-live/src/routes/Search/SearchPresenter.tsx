@@ -76,7 +76,9 @@ const SearchPresenter: React.FC<ISearch> = ({ player }) => {
       setFiltered(null);
       return -1;
     }
-    const filtered = player.filter((p) => p.playerName.includes(term));
+    const filtered = player.filter(
+      (p) => p.playerName.includes(term) || p.teamName.includes(term)
+    );
     setFiltered(filtered);
   };
   const handleKeyPress = (e: any) => {
