@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import { withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -38,7 +37,6 @@ const List = styled.div`
 `;
 
 export default withRouter((props) => {
-  console.log(props);
   useEffect(() => {
     const handleClick = () => {
       if (menu.classList.contains("hide")) {
@@ -60,6 +58,18 @@ export default withRouter((props) => {
       menu.removeEventListener("click", handleClick);
     };
   }, []);
+  const handleButtonClick = () => {
+    const menu: HTMLDivElement = document.querySelector(
+      ".menu"
+    ) as HTMLDivElement;
+    if (menu.classList.contains("hide")) {
+      menu.classList.remove("hide");
+      menu.style.display = "block";
+    } else {
+      menu.classList.add("hide");
+      menu.style.display = "none";
+    }
+  };
   return (
     <>
       <Wrapper>
@@ -71,10 +81,14 @@ export default withRouter((props) => {
           <i className="fas fa-user"></i>
         </div>
       </Wrapper>
-      <Menu className="menu hide">
-        <List>Home</List>
+      <Menu className="menu hide" onClick={handleButtonClick}>
+        <List>
+          <Link to="/">Home</Link>
+        </List>
         <List>리그</List>
-        <List>선수 정보</List>
+        <List>
+          <Link to="/search">선수 정보</Link>
+        </List>
         <List>문자 중계</List>
       </Menu>
     </>
