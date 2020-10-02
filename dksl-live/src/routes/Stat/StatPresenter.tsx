@@ -117,7 +117,6 @@ const StatPresenter: React.FC<IStatProps> = ({ stat }) => {
     setIsBatter(false);
     setIsPitcher(true);
   };
-  console.log(stat);
   return (
     <>
       <Container>

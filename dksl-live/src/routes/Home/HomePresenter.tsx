@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { INowLive } from "../../interfaces/nowLive";
 import Slider from "react-slick";
@@ -9,6 +9,7 @@ interface IHome {
 }
 
 const Wrapper = styled.div`
+  width: 100%;
   margin-top: 20px;
   padding: 0 20px;
 `;
@@ -74,7 +75,11 @@ const HomePresenter: React.FC<IHome> = ({ live }) => {
     slidesToScroll: 1,
     dots: true,
   };
-
+  useEffect(() => {
+    const arrow: any = document.querySelectorAll(".slick-arrow");
+    arrow[0].style.display = "none";
+    arrow[1].style.display = "none";
+  }, []);
   return (
     <div>
       <Wrapper>

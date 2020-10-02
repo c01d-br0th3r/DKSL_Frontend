@@ -76,7 +76,9 @@ export default withRouter((props) => {
         <div className="hamburger">
           <i className="fab fa-accessible-icon" />
         </div>
-        <div>DKSL</div>
+        <Link to="/">
+          <div>DKSL</div>
+        </Link>
         <div>
           <i className="fas fa-user"></i>
         </div>
