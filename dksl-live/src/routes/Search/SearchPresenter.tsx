@@ -57,6 +57,7 @@ const Table = styled.table`
   td {
     text-align: center;
     padding: 10px;
+    padding-top: 12px;
     border-bottom: 1px solid #f2f2f2;
   }
 `;
@@ -99,7 +100,13 @@ const SearchPresenter: React.FC<ISearch> = ({ player }) => {
       </InputForm>
       <div>
         {filtered === null ? (
-          <div>검색어를 입력하세용</div>
+          <div>
+            <div>검색어를 입력하세용</div>
+            <div>
+              윤주엽(프로젝트 매니저) / 신상우(백엔드) / 이찬형(프론트엔드)이
+              밤새서 만듦 ㅎㅎ
+            </div>
+          </div>
         ) : (
           <TableWrapper>
             <Table>

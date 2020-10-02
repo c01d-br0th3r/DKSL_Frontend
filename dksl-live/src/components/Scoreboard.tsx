@@ -29,6 +29,13 @@ const Team = styled.div`
   font-weight: 600;
   margin-bottom: 15px;
   opacity: 0.8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  div:nth-child(1) {
+    margin-bottom: 5px;
+  }
 `;
 
 const Score = styled.div`
@@ -129,7 +136,10 @@ const Scoreboard: React.FC<IProps> = ({ live }) => {
     <div>
       <ScoreContainer>
         <TeamScore>
-          <Team>{live.away.name}</Team>
+          <Team>
+            <div>{live.away.name.split(" ")[0]}</div>
+            <div>{live.away.name.split(" ")[1]}</div>
+          </Team>
           <Score>{live.away.totalScore}</Score>
         </TeamScore>
         <VSContainer>
@@ -137,7 +147,10 @@ const Scoreboard: React.FC<IProps> = ({ live }) => {
           <Ground>{live.ground}</Ground>
         </VSContainer>
         <TeamScore>
-          <Team>{live.home.name}</Team>
+          <Team>
+            <div>{live.home.name.split(" ")[0]}</div>
+            <div>{live.home.name.split(" ")[1]}</div>
+          </Team>
           <Score>{live.home.totalScore}</Score>
         </TeamScore>
       </ScoreContainer>
