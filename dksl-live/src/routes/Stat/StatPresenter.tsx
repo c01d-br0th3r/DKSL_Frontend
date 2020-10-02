@@ -6,12 +6,6 @@ interface IStatProps {
   stat: IStat;
 }
 
-const Header = styled.div`
-  padding: 15px 10px;
-  background-color: #2450aa;
-  color: #fff;
-`;
-
 const TeamName = styled.div`
   font-size: 18px;
   font-weight: 600;
@@ -129,9 +123,6 @@ const StatPresenter: React.FC<IStatProps> = ({ stat }) => {
   console.log(stat);
   return (
     <>
-      <Header>
-        <div onClick={handleClick}>뒤로 가기</div>
-      </Header>
       <Container>
         <PlayerInfo>
           <Img>stat.img</Img>
