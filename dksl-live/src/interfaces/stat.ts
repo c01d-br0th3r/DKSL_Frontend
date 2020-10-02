@@ -77,13 +77,15 @@ interface IPitcherStat {
   yearly: IPitcherObj[];
 }
 
-interface IPlayerInfo {
+export interface IPlayerInfo {
   Bat_Throw: string;
   backNum: number;
   birthday: string;
   playerName: string;
   playerPhoto: string;
   position: number;
+  teamId: number;
+  playerId: number;
   teamName: string;
   wasPro: number;
 }
