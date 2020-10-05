@@ -11,3 +11,11 @@ export interface ITeam {
   score: number[];
   totalScore: number;
 }
+
+export interface ITeamInfo {
+  teamId: number;
+  leagueId: number;
+  teamName: string;
+  foundingYear: number;
+  joinYear: number;
+}
