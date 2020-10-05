@@ -3,6 +3,8 @@ import { IPlayerInfo } from "../../interfaces/stat";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
+let dataPerPage = 30;
+
 interface ISearch {
   player: IPlayerInfo[];
 }
@@ -69,19 +71,52 @@ const SLink = styled(Link)`
 const SearchPresenter: React.FC<ISearch> = ({ player }) => {
   const [term, setTerm] = useState<string>("");
   const [filtered, setFiltered] = useState<IPlayerInfo[] | null>(null);
+  const [page, setPage] = useState<number>(0);
+  const [pageData, setPageData] = useState<IPlayerInfo[] | null>(null);
+  const [totalPage, setTotalPage] = useState<number>(0);
+
+  useEffect(() => {
+    setTotalPage(Math.ceil(player.length / dataPerPage));
+    setPage(0);
+  }, []);
+
+  useEffect(() => {
+    const start = page * dataPerPage;
+    const end = page * dataPerPage + dataPerPage;
+    if (!filtered) {
+      setPageData(player.slice(start, end));
+    } else {
+      setPageData(filtered.slice(start, end));
+    }
+  }, [page]);
+
+  const handlePageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLButtonElement;
+    setPage(parseInt(target.innerText) - 1);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTerm(e.target.value);
   };
   const handleClick = () => {
+    const start = page * dataPerPage;
+    const end = page * dataPerPage + dataPerPage;
     if (term === "") {
       setFiltered(null);
+      setPage(0);
+      setTotalPage(Math.ceil(player.length / dataPerPage));
+      setPageData(player.slice(start, end));
       return -1;
     }
     const filtered = player.filter(
       (p) => p.playerName.includes(term) || p.teamName.includes(term)
     );
+    setPage(0);
+    setTotalPage(Math.ceil(filtered.length / dataPerPage));
     setFiltered(filtered);
+    setPageData(filtered.slice(start, end));
   };
+
   const handleKeyPress = (e: any) => {
     if (e.key === "Enter") handleClick();
   };
@@ -99,14 +134,9 @@ const SearchPresenter: React.FC<ISearch> = ({ player }) => {
         </Btn>
       </InputForm>
       <div>
-        {filtered === null ? (
-          <div>
-            <div>검색어를 입력하세용</div>
-            <div>
-              윤주엽(프로젝트 매니저) / 신상우(백엔드) / 이찬형(프론트엔드)이
-              밤새서 만듦 ㅎㅎ
-            </div>
-          </div>
+        <div></div>
+        {pageData === null ? (
+          <div>Loading...</div>
         ) : (
           <TableWrapper>
             <Table>
@@ -116,7 +146,7 @@ const SearchPresenter: React.FC<ISearch> = ({ player }) => {
                   <td>소속</td>
                   <td>등번호</td>
                 </tr>
-                {filtered.map((p) => (
+                {pageData.map((p) => (
                   <tr key={p.playerId}>
                     <td>
                       <SLink to={`/stat/${p.playerId}`}>{p.playerName}</SLink>
@@ -132,6 +162,13 @@ const SearchPresenter: React.FC<ISearch> = ({ player }) => {
               </tbody>
             </Table>
           </TableWrapper>
+        )}
+        {totalPage !== 0 && (
+          <div onClick={handlePageClick}>
+            {[...Array(totalPage)].map((t, i) => (
+              <button key={i}>{i + 1}</button>
+            ))}
+          </div>
         )}
       </div>
     </Wrapper>

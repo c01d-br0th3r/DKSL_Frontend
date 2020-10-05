@@ -16,12 +16,15 @@ const SearchContainer: React.FC<{}> = () => {
     };
     fetchAllPlayers();
   }, []);
+
   return (
     <div>
       {player === null ? (
         <div>Loading...</div>
       ) : (
-        <SearchPresenter player={player} />
+        <>
+          <SearchPresenter player={player} />
+        </>
       )}
     </div>
   );
