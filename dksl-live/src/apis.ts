@@ -16,6 +16,7 @@ const apis = {
   fetchTeamInfo: (id: number) => api.get(`getTeamInfo/${id}`),
   fetchAllPlayers: () => api.get(`getPlayerInfo`),
   fetchLiveGames: () => socketServer.get(`getLiveGames`),
+  fetchTeamsByLeagueId: (id: number) => api.get(`getLeagueTeams/${id}`),
 };
 
 export default apis;
