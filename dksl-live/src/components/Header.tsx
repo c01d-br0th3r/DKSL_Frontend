@@ -87,7 +87,9 @@ export default withRouter((props) => {
         <List>
           <Link to="/">Home</Link>
         </List>
-        <List>리그</List>
+        <List>
+          <Link to="/league">리그</Link>
+        </List>
         <List>
           <Link to="/search">선수 정보</Link>
         </List>
