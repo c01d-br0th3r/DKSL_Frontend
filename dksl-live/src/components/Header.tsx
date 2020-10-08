@@ -91,6 +91,9 @@ export default withRouter((props) => {
           <Link to="/league">리그</Link>
         </List>
         <List>
+          <Link to="/records">기록실</Link>
+        </List>
+        <List>
           <Link to="/search">선수 정보</Link>
         </List>
         <List>문자 중계</List>
