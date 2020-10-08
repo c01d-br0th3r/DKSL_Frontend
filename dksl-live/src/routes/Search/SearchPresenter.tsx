@@ -64,6 +64,21 @@ const Table = styled.table`
   }
 `;
 
+const Pagination = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 10px 0;
+`;
+
+const Button: any = styled.button`
+  all: unset;
+  font-weight: 600;
+  color: ${(props: any) => (props.select ? "#2450aa" : "#999")};
+`;
+
 const SLink = styled(Link)`
   width: 100%;
 `;
@@ -90,7 +105,7 @@ const SearchPresenter: React.FC<ISearch> = ({ player }) => {
     }
   }, [page]);
 
-  const handlePageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handlePageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.target as HTMLButtonElement;
     setPage(parseInt(target.innerText) - 1);
   };
@@ -98,6 +113,17 @@ const SearchPresenter: React.FC<ISearch> = ({ player }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTerm(e.target.value);
   };
+
+  const handleRightArrowClick = () => {
+    if (page === totalPage - 1) return false;
+    setPage((page) => page + 1);
+  };
+
+  const handleLeftArrowClick = () => {
+    if (page === 0) return false;
+    setPage((page) => page - 1);
+  };
+
   const handleClick = () => {
     const start = page * dataPerPage;
     const end = page * dataPerPage + dataPerPage;
@@ -164,11 +190,47 @@ const SearchPresenter: React.FC<ISearch> = ({ player }) => {
           </TableWrapper>
         )}
         {totalPage !== 0 && (
-          <div onClick={handlePageClick}>
-            {[...Array(totalPage)].map((t, i) => (
-              <button key={i}>{i + 1}</button>
-            ))}
-          </div>
+          <Pagination>
+            <div onClick={handleLeftArrowClick}>{`<`}</div>
+            {[...Array(totalPage)].map((t, i) => {
+              if (page < 3) {
+                if (i <= 4) {
+                  return (
+                    <Button
+                      onClick={handlePageClick}
+                      key={i}
+                      select={page === i}
+                    >
+                      {i + 1}
+                    </Button>
+                  );
+                }
+              } else if (page <= totalPage - 3) {
+                if (i >= page - 2 && i <= page + 2)
+                  return (
+                    <Button
+                      onClick={handlePageClick}
+                      key={i}
+                      select={page === i}
+                    >
+                      {i + 1}
+                    </Button>
+                  );
+              } else {
+                if (i >= totalPage - 5 && i <= totalPage - 1)
+                  return (
+                    <Button
+                      onClick={handlePageClick}
+                      key={i}
+                      select={page === i}
+                    >
+                      {i + 1}
+                    </Button>
+                  );
+              }
+            })}
+            <div onClick={handleRightArrowClick}>{`>`}</div>
+          </Pagination>
         )}
       </div>
     </Wrapper>
