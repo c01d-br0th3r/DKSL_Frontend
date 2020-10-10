@@ -1,4 +1,5 @@
-interface IBatterStatObj {
+export interface IBatterStatObj {
+  playerName: string;
   playerId: number;
   year: number;
   G: number;
@@ -46,7 +47,7 @@ interface IBatterStat {
   yearly: IBatterStatObj[];
 }
 
-interface IPitcherObj {
+export interface IPitcherObj {
   AB: number;
   BB: number;
   BK: number;
@@ -70,6 +71,7 @@ interface IPitcherObj {
   WP: number;
   playerId: number;
   year: number;
+  playerName: string;
 }
 
 interface IPitcherStat {
