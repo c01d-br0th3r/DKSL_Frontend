@@ -172,7 +172,7 @@ const RecordsPresenter: React.FC<IPresenter> = ({
             <Table>
               <tbody>
                 <tr onClick={handlePitcherKey}>
-                  <td>시즌</td>
+                  <td>선수명</td>
                   <td>ERA</td>
                   <td>G</td>
                   <td>W</td>
@@ -204,7 +204,7 @@ const RecordsPresenter: React.FC<IPresenter> = ({
                     <td>{p.L}</td>
                     <td>{p.HLD}</td>
                     <td>{p.SV}</td>
-                    <td>{p.IP}</td>
+                    <td>{p.IP && Math.floor(p.IP / 3)}</td>
                     <td>{p.H}</td>
                     <td>{p.AB}</td>
                     <td>{p.BB}</td>
