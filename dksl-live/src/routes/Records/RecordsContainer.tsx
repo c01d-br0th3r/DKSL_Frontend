@@ -41,6 +41,7 @@ const RecordsContainer: React.FC<{}> = () => {
           _years.add(b.year);
         });
         let years = Array.from(_years) as number[];
+        years.sort((a, b) => b - a);
         setYears(years);
       } catch (e) {
         console.log(e);
@@ -54,7 +55,7 @@ const RecordsContainer: React.FC<{}> = () => {
       let batterPlayersWithYear: any = {};
       years.forEach((year) => {
         let batterArr = batters.filter(
-          (batter) => batter.year === year && batter.PA >= 40
+          (batter) => batter.year === year && batter.PA >= 20
         );
         batterPlayersWithYear[year] = batterArr;
       });
