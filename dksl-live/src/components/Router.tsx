@@ -12,6 +12,7 @@ import Stat from "../routes/Stat";
 import Search from "../routes/Search";
 import League from "../routes/League";
 import Records from "../routes/Records";
+import Teams from "../routes/Teams";
 import Header from "./Header";
 
 export default () => (
@@ -24,6 +25,7 @@ export default () => (
         <Route path="/live/:id" component={Main} />
         <Route path="/records" component={Records} />
         <Route path="/stat/:id" component={Stat} />
+        <Route path="/teams/:id" component={Teams} />
         <Route exact path="/search" component={Search} />
         <Route path="/404" component={NotFound} />
         <Redirect path="*" to="/404" />
