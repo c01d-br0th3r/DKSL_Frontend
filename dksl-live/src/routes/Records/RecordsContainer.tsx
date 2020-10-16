@@ -33,8 +33,14 @@ const RecordsContainer: React.FC<{}> = () => {
     const fetchAllPlayersStat = async () => {
       try {
         let _years = new Set();
-        const { data: batters } = await apis.fetchAllPlayersBatterStat();
-        const { data: pitchers } = await apis.fetchAllPlayersPithcherStat();
+        const {
+          data: { yearly: batters },
+        } = await apis.fetchAllPlayersBatterStat();
+        const {
+          data: { yearly: pitchers },
+        } = await apis.fetchAllPlayersPithcherStat();
+        console.log(batters);
+        console.log(pitchers);
         setBatters(batters);
         setPitchers(pitchers);
         batters.forEach((b: IBatterStatObj) => {
