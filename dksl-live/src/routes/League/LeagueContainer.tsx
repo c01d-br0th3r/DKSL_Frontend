@@ -2,15 +2,24 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import apis from "../../apis";
 import LeaguePresenter from "./LeaguePresenter";
 import { ITeamInfo } from "../../interfaces/team";
+import styled from "styled-components";
 
 interface ILeague {
   leagueId: number;
   leagueName: string;
 }
 
+const Select = styled.select`
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+`;
+
 const LeagueContainer: React.FC<{}> = () => {
   const [league, setLeague] = useState<ILeague[] | null>(null);
-  const [leagueId, setLeagueId] = useState<number>(0);
+  const [leagueId, setLeagueId] = useState<number>(1);
   const [teams, setTeams] = useState<ITeamInfo[] | null>(null);
   useEffect(() => {
     const fetchLeague = async () => {
@@ -28,6 +37,15 @@ const LeagueContainer: React.FC<{}> = () => {
       if (leagueId > 0) {
         try {
           const { data: teams } = await apis.fetchTeamsByLeagueId(leagueId);
+          teams.sort((a: ITeamInfo, b: ITeamInfo) => {
+            if (a.teamName < b.teamName) {
+              return -1;
+            }
+            if (a.teamName > b.teamName) {
+              return 1;
+            }
+            return 0;
+          });
           setTeams(teams);
         } catch (e) {
           console.log(e);
@@ -47,14 +65,13 @@ const LeagueContainer: React.FC<{}> = () => {
         <div>Loading ... </div>
       ) : (
         <div>
-          <select onChange={handleChange} defaultValue="0">
-            <option value="0">리그 선택</option>
+          <Select onChange={handleChange} defaultValue="1">
             {league.map((l) => (
               <option value={l.leagueId} key={l.leagueId}>
                 {l.leagueName}
               </option>
             ))}
-          </select>
+          </Select>
           {leagueId === 0 ? (
             <div></div>
           ) : (
