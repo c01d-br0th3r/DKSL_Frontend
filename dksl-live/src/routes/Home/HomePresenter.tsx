@@ -76,43 +76,51 @@ const HomePresenter: React.FC<IHome> = ({ live }) => {
     dots: true,
   };
   useEffect(() => {
-    const arrow: any = document.querySelectorAll(".slick-arrow");
-    arrow[0].style.display = "none";
-    arrow[1].style.display = "none";
+    if (live.length > 0) {
+      const arrow: any = document.querySelectorAll(".slick-arrow");
+      arrow[0].style.display = "none";
+      arrow[1].style.display = "none";
+    }
   }, []);
   return (
     <div>
       <Wrapper>
         <Img src="https://s7d2.scene7.com/is/image/TWCNews/mlb_baseball_jpeg" />
-        <Title>진행중인 게임</Title>
-        <LiveGames>
-          <Slider {...settings}>
-            {live.map((l, idx) => (
-              <div key={idx}>
-                <Link to={`live/${idx}`}>
-                  <Game>
-                    <Team>
-                      <div>{l.away.name.split(" ")[0]}</div>
-                      <div>{l.away.score}</div>
-                    </Team>
-                    <VS>
-                      <div>vs</div>
-                      <div>
-                        {l.nowInning === 0
-                          ? "경기 전"
-                          : `${l.nowInning}회 ${l.nowTopBottom ? "말" : "초"}`}
-                      </div>
-                    </VS>
-                    <Team>
-                      <div>{l.home.name.split(" ")[0]}</div>
-                      <div>{l.home.score}</div>
-                    </Team>
-                  </Game>
-                </Link>
-              </div>
-            ))}
-          </Slider>
-        </LiveGames>
+        <Title>LIVE</Title>
+        {live.length === 0 ? (
+          <div>진행중인 게임이 없습니다!</div>
+        ) : (
+          <LiveGames>
+            <Slider {...settings}>
+              {live.map((l, idx) => (
+                <div key={idx}>
+                  <Link to={`live/${idx}`}>
+                    <Game>
+                      <Team>
+                        <div>{l.away.name.split(" ")[0]}</div>
+                        <div>{l.away.score}</div>
+                      </Team>
+                      <VS>
+                        <div>vs</div>
+                        <div>
+                          {l.nowInning === 0
+                            ? "경기 전"
+                            : `${l.nowInning}회 ${
+                                l.nowTopBottom ? "말" : "초"
+                              }`}
+                        </div>
+                      </VS>
+                      <Team>
+                        <div>{l.home.name.split(" ")[0]}</div>
+                        <div>{l.home.score}</div>
+                      </Team>
+                    </Game>
+                  </Link>
+                </div>
+              ))}
+            </Slider>
+          </LiveGames>
+        )}
       </Wrapper>
     </div>
   );
