@@ -76,7 +76,7 @@ const HomePresenter: React.FC<IHome> = ({ live }) => {
     dots: true,
   };
   useEffect(() => {
-    if (live.length > 0) {
+    if (live.length > 1) {
       const arrow: any = document.querySelectorAll(".slick-arrow");
       arrow[0].style.display = "none";
       arrow[1].style.display = "none";
