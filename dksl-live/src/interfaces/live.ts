@@ -6,7 +6,7 @@ interface ILeague {
   name: string;
 }
 
-interface ICount {
+export interface ICount {
   Ball: number;
   Out: number;
   Strike: number;
