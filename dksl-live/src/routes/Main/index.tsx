@@ -3,6 +3,7 @@ import { RouteComponentProps } from "react-router-dom";
 import socketio from "socket.io-client";
 import styled from "styled-components";
 import { ILive } from "../..//interfaces/live";
+import LiveGround from "../../components/LiveGround";
 import Record from "../../components/Record";
 import Scoreboard from "../../components/Scoreboard";
 import "./Main.css";
@@ -84,9 +85,7 @@ const Main: React.FC<RouteComponentProps<MatchParams>> = ({ match }) => {
     const target = e.target as HTMLButtonElement;
     setCurrentInning(parseInt(target.innerText));
   };
-  useEffect(() => {
-    console.log(currentInning);
-  }, [currentInning]);
+
   return (
     <div>
       {live === null ? (
@@ -112,6 +111,7 @@ const Main: React.FC<RouteComponentProps<MatchParams>> = ({ match }) => {
                   </Button>
                 ))}
               </ButtonContainer>
+              <LiveGround count={live.nowCount} base={live.nowBase} />
               <Textcast
                 dangerouslySetInnerHTML={{
                   __html:
