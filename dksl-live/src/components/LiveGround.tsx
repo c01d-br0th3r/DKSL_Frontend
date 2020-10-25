@@ -109,7 +109,6 @@ const LiveGround: React.FC<IProps> = ({ count, base }) => {
     for (let i = 0; i < cnt; i++) arr.push(i);
     return arr;
   };
-  console.log(count);
   return (
     <Wrapper>
       <Ground>
