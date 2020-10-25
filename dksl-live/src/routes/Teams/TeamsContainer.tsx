@@ -16,7 +16,8 @@ const TeamsContainer: React.FC<RouteComponentProps<IMatchProps>> = ({
   const [batters, setBatters] = useState<IBatterStatObj[] | null>(null);
   const [pitchers, setPitchers] = useState<IPitcherObj[] | null>(null);
   const [isBatter, setIsBatter] = useState<boolean>(true);
-
+  const [sortKeyB, setSortKeyB] = useState<string>("AVG");
+  const [sortKeyP, setSortKeyP] = useState<string>("ERA");
   useEffect(() => {
     const {
       params: { id },
@@ -42,8 +43,41 @@ const TeamsContainer: React.FC<RouteComponentProps<IMatchProps>> = ({
     fetchTeamInfo(parseInt(id));
   }, []);
 
+  useEffect(() => {
+    if (batters) {
+      batters.sort((a: any, b: any) => b[sortKeyB] - a[sortKeyB]);
+      setBatters([...batters]);
+    }
+  }, [sortKeyB]);
+
+  useEffect(() => {
+    if (pitchers) {
+      if (sortKeyP !== "ERA") {
+        pitchers.sort((a: any, b: any) => b[sortKeyP] - a[sortKeyP]);
+        setPitchers([...pitchers]);
+      } else {
+        pitchers.sort((a: any, b: any) => a[sortKeyP] - b[sortKeyP]);
+        setPitchers([...pitchers]);
+      }
+    }
+  }, [sortKeyP]);
+
   const handleIsBatter = () => {
     setIsBatter((isBatter) => !isBatter);
+  };
+
+  const handleSortKeyB = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const sortKeyB = target.innerText;
+    if (sortKeyB === "랭킹" || sortKeyB === "선수명") return -1;
+    setSortKeyB(sortKeyB);
+  };
+
+  const handleSortKeyP = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const sortKeyP = target.innerText;
+    if (sortKeyP === "랭킹" || sortKeyP === "선수명") return -1;
+    setSortKeyP(sortKeyP);
   };
 
   return (
@@ -57,6 +91,8 @@ const TeamsContainer: React.FC<RouteComponentProps<IMatchProps>> = ({
           pitchers={pitchers}
           isBatter={isBatter}
           handleIsBatter={handleIsBatter}
+          handleSortKeyB={handleSortKeyB}
+          handleSortKeyP={handleSortKeyP}
         />
       )}
     </div>
