@@ -11,6 +11,8 @@ interface IProps {
   pitchers: IPitcherObj[];
   isBatter: boolean;
   handleIsBatter: () => void;
+  handleSortKeyB: (e: React.MouseEvent) => void;
+  handleSortKeyP: (e: React.MouseEvent) => void;
 }
 
 const BtnWrapper = styled.div`
@@ -62,6 +64,8 @@ const TeamsPresenter: React.FC<IProps> = ({
   pitchers,
   isBatter,
   handleIsBatter,
+  handleSortKeyB,
+  handleSortKeyP,
 }) => {
   return (
     <div>
@@ -82,9 +86,9 @@ const TeamsPresenter: React.FC<IProps> = ({
         </div>
         <div>
           {isBatter ? (
-            <BatterTable batters={batters} />
+            <BatterTable batters={batters} handleClick={handleSortKeyB} />
           ) : (
-            <PitcherTable pitchers={pitchers} />
+            <PitcherTable pitchers={pitchers} handleClick={handleSortKeyP} />
           )}
         </div>
       </div>
