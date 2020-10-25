@@ -12,6 +12,9 @@ const GlobalStyle = createGlobalStyle`
         color: inherit;
     }
     button {
+        all: unset;
+        text-align: center;
+        font-size: inherit;
         &:focus {
           outline: none; 
         }
