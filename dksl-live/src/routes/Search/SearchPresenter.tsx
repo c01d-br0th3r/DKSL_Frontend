@@ -135,7 +135,10 @@ const SearchPresenter: React.FC<ISearch> = ({ player }) => {
       return -1;
     }
     const filtered = player.filter(
-      (p) => p.playerName.includes(term) || p.teamName.includes(term)
+      (p) =>
+        p.playerName.includes(term) ||
+        p.teamName.includes(term) ||
+        p.backNum == parseInt(term)
     );
     setPage(0);
     setTotalPage(Math.ceil(filtered.length / dataPerPage));
