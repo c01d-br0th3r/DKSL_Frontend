@@ -224,7 +224,6 @@ const BatterName = styled.div`
 const StatPresenter: React.FC<IStatProps> = ({ stat }) => {
   const [isBatter, setIsBatter] = useState<boolean>(true);
   const [isPitcher, setIsPitcher] = useState<boolean>(false);
-  console.log(stat);
   const { batter_stat: s, player_info: i, pitcher_stat: p } = stat;
   const handleBatter = () => {
     setIsBatter(true);
